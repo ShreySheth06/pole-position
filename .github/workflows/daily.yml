@@ -1,0 +1,61 @@
+name: Print the paper
+
+on:
+  schedule:
+    - cron: "30 0 * * *"      # 06:00 IST daily        (morning edition)
+    - cron: "0 2 * * 1-5"     # 07:30 IST weekdays     (refresh)
+    - cron: "15 3 * * 1-5"    # 08:45 IST weekdays     (pre-open refresh)
+    - cron: "30 11 * * 1-5"   # 17:00 IST weekdays     (post-close update)
+  workflow_dispatch: {}        # "Run workflow" button = refresh now
+  push:
+    branches: [main]
+    paths-ignore: ["archive/**", "README.md"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build today's edition
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TZ: Asia/Kolkata
+        run: python build.py
+
+      - name: Save edition to archive (also keeps the schedule alive)
+        run: |
+          git config user.name  "pole-position-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add archive
+          if ! git diff --cached --quiet; then
+            git commit -m "Edition $(date +'%Y-%m-%d %H:%M IST')"
+            git pull --rebase --quiet || true
+            git push || echo "archive push skipped"
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
