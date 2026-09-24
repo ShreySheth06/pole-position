@@ -94,16 +94,17 @@ def _call_provider(provider: str, model: str, api_key: str, system: str, user: s
     return _extract_text(provider, status, raw)
 
 def _try_provider(provider: str, models: list, api_key: str, system: str, user: str, timeout: int):
-    """404/model-not-found -> next model now; 429/5xx -> one retry after 5s then next model; else -> next model."""
+    """404/model-not-found -> next model now; 429/5xx -> retry after 10s and 25s, then next model; else -> next model."""
+    backoff = (10, 25)  # overload spikes (429/503) are usually brief -> wait, then retry
     for model in models:
-        for attempt in (1, 2):
+        for attempt in range(len(backoff) + 1):
             try:
                 return _call_provider(provider, model, api_key, system, user, timeout), model
             except _ProviderError as e:
                 retryable = e.status == 429 or (e.status is not None and e.status >= 500)
-                if retryable and attempt == 1:
-                    log(f"{provider}/{model}: {e} -- retrying once in 5s")
-                    time.sleep(5)
+                if retryable and attempt < len(backoff):
+                    log(f"{provider}/{model}: {e} -- retry {attempt + 1} in {backoff[attempt]}s")
+                    time.sleep(backoff[attempt])
                     continue
                 log(f"{provider}/{model}: {e} -- trying next model")
                 break
