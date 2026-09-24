@@ -1,0 +1,116 @@
+{
+  "groups": [
+    {
+      "id": "india", "label": "India",
+      "items": [
+        { "symbol": "^NSEI", "name": "Nifty 50", "short": "NIFTY", "decimals": 2, "unit": "" },
+        { "symbol": "^BSESN", "name": "Sensex", "short": "SENSEX", "decimals": 2, "unit": "" },
+        { "symbol": "^NSEBANK", "name": "Bank Nifty", "short": "BANKNIFTY", "decimals": 2, "unit": "" },
+        { "symbol": "^INDIAVIX", "name": "India VIX", "short": "VIX", "decimals": 2, "unit": "" },
+        { "symbol": "^NSMIDCP", "name": "Nifty Next 50", "short": "NEXT50", "decimals": 2, "unit": "", "optional": true },
+        { "symbol": "NIFTYMIDCAP150.NS", "name": "Nifty Midcap 150", "short": "MIDCAP150", "decimals": 2, "unit": "", "optional": true },
+        { "symbol": "INR=X", "name": "USD/INR", "short": "USDINR", "decimals": 3, "unit": "", "stooq": "usdinr" }
+      ]
+    },
+    {
+      "id": "sectors", "label": "Nifty Sectors",
+      "items": [
+        { "symbol": "^NSEBANK", "name": "Bank", "short": "BANK", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXIT", "name": "IT", "short": "IT", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXAUTO", "name": "Auto", "short": "AUTO", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXPHARMA", "name": "Pharma", "short": "PHARMA", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXFMCG", "name": "FMCG", "short": "FMCG", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXMETAL", "name": "Metal", "short": "METAL", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXREALTY", "name": "Realty", "short": "REALTY", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXENERGY", "name": "Energy", "short": "ENERGY", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXPSUBANK", "name": "PSU Bank", "short": "PSUBANK", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXMEDIA", "name": "Media", "short": "MEDIA", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXINFRA", "name": "Infra", "short": "INFRA", "decimals": 2, "unit": "" },
+        { "symbol": "NIFTY_FIN_SERVICE.NS", "name": "Fin Services", "short": "FINSERV", "decimals": 2, "unit": "" },
+        { "symbol": "^CNXPSE", "name": "PSE", "short": "PSE", "decimals": 2, "unit": "", "optional": true }
+      ]
+    },
+    {
+      "id": "global", "label": "Global Indices",
+      "items": [
+        { "symbol": "^GSPC", "name": "S&P 500", "short": "SPX", "decimals": 2, "unit": "", "region": "US", "currency": "USD", "stooq": "^spx" },
+        { "symbol": "^IXIC", "name": "Nasdaq", "short": "NASDAQ", "decimals": 2, "unit": "", "region": "US", "currency": "USD", "stooq": "^ndq" },
+        { "symbol": "^DJI", "name": "Dow Jones", "short": "DOW", "decimals": 2, "unit": "", "region": "US", "currency": "USD", "stooq": "^dji" },
+        { "symbol": "^STOXX50E", "name": "Euro Stoxx 50", "short": "SX5E", "decimals": 2, "unit": "", "region": "Europe", "currency": "EUR" },
+        { "symbol": "^FTSE", "name": "FTSE 100", "short": "FTSE", "decimals": 2, "unit": "", "region": "Europe", "currency": "GBP", "stooq": "^ukx" },
+        { "symbol": "^GDAXI", "name": "DAX", "short": "DAX", "decimals": 2, "unit": "", "region": "Europe", "currency": "EUR", "stooq": "^dax" },
+        { "symbol": "^FCHI", "name": "CAC 40", "short": "CAC", "decimals": 2, "unit": "", "region": "Europe", "currency": "EUR", "stooq": "^cac" },
+        { "symbol": "^N225", "name": "Nikkei 225", "short": "NIKKEI", "decimals": 2, "unit": "", "region": "Asia", "currency": "JPY", "stooq": "^nkx" },
+        { "symbol": "^HSI", "name": "Hang Seng", "short": "HSI", "decimals": 2, "unit": "", "region": "Asia", "currency": "HKD", "stooq": "^hsi" },
+        { "symbol": "000001.SS", "name": "Shanghai Composite", "short": "SHCOMP", "decimals": 2, "unit": "", "region": "Asia", "currency": "CNY" },
+        { "symbol": "^KS11", "name": "KOSPI", "short": "KOSPI", "decimals": 2, "unit": "", "region": "Asia", "currency": "KRW" },
+        { "symbol": "^TWII", "name": "Taiwan Weighted", "short": "TWSE", "decimals": 2, "unit": "", "region": "Asia", "currency": "TWD" },
+        { "symbol": "^AXJO", "name": "ASX 200", "short": "ASX200", "decimals": 2, "unit": "", "region": "Asia", "currency": "AUD" }
+      ]
+    },
+    {
+      "id": "futures", "label": "US Futures",
+      "items": [
+        { "symbol": "ES=F", "name": "S&P 500 Fut", "short": "ES", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "NQ=F", "name": "Nasdaq Fut", "short": "NQ", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "YM=F", "name": "Dow Fut", "short": "YM", "decimals": 0, "unit": "", "currency": "USD" }
+      ]
+    },
+    {
+      "id": "fx", "label": "Currencies",
+      "items": [
+        { "symbol": "DX-Y.NYB", "name": "Dollar Index", "short": "DXY", "decimals": 2, "unit": "" },
+        { "symbol": "INR=X", "name": "USD/INR", "short": "USDINR", "decimals": 3, "unit": "", "stooq": "usdinr" },
+        { "symbol": "EURUSD=X", "name": "EUR/USD", "short": "EURUSD", "decimals": 4, "unit": "", "stooq": "eurusd" },
+        { "symbol": "JPY=X", "name": "USD/JPY", "short": "USDJPY", "decimals": 2, "unit": "", "stooq": "usdjpy" },
+        { "symbol": "GBPUSD=X", "name": "GBP/USD", "short": "GBPUSD", "decimals": 4, "unit": "" },
+        { "symbol": "CNY=X", "name": "USD/CNY", "short": "USDCNY", "decimals": 3, "unit": "" }
+      ]
+    },
+    {
+      "id": "commodities", "label": "Commodities",
+      "items": [
+        { "symbol": "BZ=F", "name": "Brent Crude", "short": "BRENT", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "CL=F", "name": "WTI Crude", "short": "WTI", "decimals": 2, "unit": "", "currency": "USD", "stooq": "cl.f" },
+        { "symbol": "GC=F", "name": "Gold", "short": "GOLD", "decimals": 1, "unit": "", "currency": "USD", "stooq": "gc.f" },
+        { "symbol": "SI=F", "name": "Silver", "short": "SILVER", "decimals": 3, "unit": "", "currency": "USD" },
+        { "symbol": "HG=F", "name": "Copper", "short": "COPPER", "decimals": 3, "unit": "", "currency": "USD" },
+        { "symbol": "NG=F", "name": "Nat Gas", "short": "NATGAS", "decimals": 3, "unit": "", "currency": "USD" }
+      ]
+    },
+    {
+      "id": "rates", "label": "Bond Yields",
+      "items": [
+        { "symbol": "^TNX", "name": "US 10Y", "short": "US10Y", "decimals": 2, "unit": "%", "stooq": "10usy.b" },
+        { "symbol": "^FVX", "name": "US 5Y", "short": "US5Y", "decimals": 2, "unit": "%" },
+        { "symbol": "^IRX", "name": "US 3M", "short": "US3M", "decimals": 2, "unit": "%" },
+        { "symbol": "^TYX", "name": "US 30Y", "short": "US30Y", "decimals": 2, "unit": "%" }
+      ]
+    },
+    {
+      "id": "tech", "label": "Tech Bellwethers",
+      "items": [
+        { "symbol": "NVDA", "name": "NVIDIA", "short": "NVDA", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "MSFT", "name": "Microsoft", "short": "MSFT", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "AAPL", "name": "Apple", "short": "AAPL", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "GOOGL", "name": "Alphabet", "short": "GOOGL", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "AMZN", "name": "Amazon", "short": "AMZN", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "META", "name": "Meta Platforms", "short": "META", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "TSM", "name": "TSMC", "short": "TSM", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "AVGO", "name": "Broadcom", "short": "AVGO", "decimals": 2, "unit": "", "currency": "USD" },
+        { "symbol": "^SOX", "name": "Philly Semis", "short": "SOX", "decimals": 2, "unit": "" },
+        { "symbol": "TCS.NS", "name": "TCS", "short": "TCS", "decimals": 2, "unit": "", "currency": "INR" },
+        { "symbol": "INFY.NS", "name": "Infosys", "short": "INFY", "decimals": 2, "unit": "", "currency": "INR" },
+        { "symbol": "HCLTECH.NS", "name": "HCL Tech", "short": "HCLTECH", "decimals": 2, "unit": "", "currency": "INR" },
+        { "symbol": "WIPRO.NS", "name": "Wipro", "short": "WIPRO", "decimals": 2, "unit": "", "currency": "INR" }
+      ]
+    },
+    {
+      "id": "crypto", "label": "Crypto",
+      "items": [
+        { "symbol": "BTC-USD", "name": "Bitcoin", "short": "BTC", "decimals": 0, "unit": "", "currency": "USD" },
+        { "symbol": "ETH-USD", "name": "Ethereum", "short": "ETH", "decimals": 2, "unit": "", "currency": "USD" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+site/
+__pycache__/
+*.pyc
+dev/shots/
+dev/last_prompt.txt

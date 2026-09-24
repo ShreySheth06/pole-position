@@ -1,0 +1,66 @@
+{
+  "title": "Pole Position",
+  "tagline": "The Morning Edition · Before the Bell",
+  "timezone": "Asia/Kolkata",
+  "market_open": "09:15",
+  "window_hours": 26,
+  "window_hours_monday": 66,
+  "repo_url": null,
+  "limits": { "india": 40, "world": 36, "tech": 30, "per_source_share": 0.35 },
+  "sections": [
+    {
+      "id": "india", "number": "01", "title": "India", "kicker": "Markets · Economy · Corporate",
+      "subsections": [
+        { "id": "markets", "label": "Markets",
+          "keywords": ["nifty", "sensex", "bank nifty", "stock", "stocks", "shares", "market", "markets", "fii", "fpi", "dii", "ipo", "mutual fund", "sebi", "f&o", "derivative", "rupee", "bond yield", "gift nifty", "rally", "sell-off", "smallcap", "midcap", "brokerage", "target price", "block deal", "nse", "bse", "listing", "demat"] },
+        { "id": "economy", "label": "Economy & Policy",
+          "keywords": ["rbi", "repo", "inflation", "cpi", "wpi", "gdp", "fiscal", "budget", "gst", "tax", "finance ministry", "sitharaman", "modi", "government", "policy", "trade deficit", "exports", "imports", "iip", "pmi", "monsoon", "tariff", "cabinet", "ministry", "subsidy", "forex reserves", "current account", "niti", "parliament"] },
+        { "id": "corporate", "label": "Companies",
+          "keywords": ["q1", "q2", "q3", "q4", "results", "earnings", "profit", "revenue", "order", "acquisition", "merger", "stake", "ceo", "board", "dividend", "buyback", "reliance", "tata", "adani", "infosys", "tcs", "hdfc", "icici", "sbi", "l&t", "bajaj", "mahindra", "maruti", "wipro", "airtel", "ltd", "limited", "plant", "deal", "contract"] }
+      ]
+    },
+    {
+      "id": "world", "number": "02", "title": "World", "kicker": "Global Markets · Economies · Governments",
+      "subsections": [
+        { "id": "markets", "label": "Markets",
+          "keywords": ["stocks", "s&p", "nasdaq", "dow", "wall street", "treasury", "treasuries", "yield", "bond", "dollar", "oil", "brent", "crude", "gold", "copper", "bitcoin", "futures", "equities", "rally", "selloff", "sell-off", "investors", "hedge fund", "earnings", "nikkei", "hang seng", "ftse", "dax", "stoxx", "yen", "yuan", "euro"] },
+        { "id": "economy", "label": "Economies & Central Banks",
+          "keywords": ["fed", "federal reserve", "powell", "ecb", "lagarde", "bank of japan", "boj", "bank of england", "boe", "pboc", "central bank", "rate cut", "rate hike", "interest rate", "inflation", "cpi", "pce", "jobs report", "payrolls", "unemployment", "gdp", "recession", "economy", "economic", "pmi", "retail sales", "imf", "world bank", "growth"] },
+        { "id": "politics", "label": "Governments & Geopolitics",
+          "keywords": ["trump", "white house", "congress", "senate", "tariff", "tariffs", "sanctions", "election", "government", "minister", "president", "war", "ukraine", "russia", "israel", "iran", "gaza", "china", "xi", "taiwan", "nato", "eu", "opec", "summit", "shutdown", "trade deal", "geopolitical", "military", "diplomat"] }
+      ]
+    },
+    {
+      "id": "tech", "number": "03", "title": "AI & Technology", "kicker": "Artificial Intelligence · Big Tech · Startups",
+      "subsections": [
+        { "id": "ai", "label": "Artificial Intelligence",
+          "keywords": ["ai", "a.i.", "artificial intelligence", "openai", "chatgpt", "gpt", "anthropic", "claude", "gemini", "deepmind", "llm", "large language model", "model", "agent", "agents", "generative", "genai", "copilot", "mistral", "llama", "xai", "grok", "machine learning", "neural", "superintelligence", "agi", "inference", "training", "perplexity", "deepseek"] },
+        { "id": "bigtech", "label": "Big Tech & Chips",
+          "keywords": ["nvidia", "apple", "microsoft", "google", "alphabet", "amazon", "meta", "tesla", "tsmc", "intel", "amd", "broadcom", "qualcomm", "arm", "samsung", "chip", "chips", "semiconductor", "gpu", "data center", "datacenter", "cloud", "antitrust", "iphone", "smartphone", "cybersecurity", "hack", "quantum"] },
+        { "id": "startups", "label": "Indian Tech & Startups",
+          "keywords": ["startup", "startups", "funding", "series a", "series b", "unicorn", "venture", "vc", "india", "indian", "bengaluru", "zomato", "eternal", "swiggy", "paytm", "flipkart", "zepto", "ola", "meesho", "nykaa", "infosys", "tcs", "wipro", "hcl", "tech mahindra", "jio", "meity", "upi", "fintech", "saas", "it services"] }
+      ]
+    }
+  ],
+  "importance_keywords": {
+    "high": ["rbi", "repo rate", "sebi", "fed", "federal reserve", "rate cut", "rate hike", "gdp", "inflation", "cpi", "budget", "fii", "fpi", "crude", "brent", "tariff", "tariffs", "recession", "earnings", "results", "ipo", "nifty", "sensex", "rupee", "treasury yields", "payrolls", "opec", "war", "sanctions", "openai", "nvidia", "gpt", "gemini", "anthropic", "acquisition", "merger", "downgrade", "upgrade", "default", "crash", "record high", "all-time high"],
+    "medium": ["bank", "banks", "profit", "revenue", "guidance", "outlook", "order", "stake", "dividend", "buyback", "policy", "exports", "gold", "dollar", "yen", "china", "chip", "semiconductor", "funding", "layoffs", "regulation", "antitrust", "model", "launch"]
+  },
+  "low_value_patterns": ["horoscope", "web stories", "in pics", "photos:", "watch:", "video:", "quiz", "brand connect", "sponsored", "advertorial", "live updates", "live blog", "wordle", "crossword", "lottery", "bigg boss", "bollywood", "cricket", "ipl", "celebrity", "recipe", "shark tank", "gift ideas", "deals on", "best phones under", "coupon"],
+  "ai": {
+    "provider": "auto",
+    "order": ["gemini", "anthropic", "openai"],
+    "models": {
+      "gemini": ["gemini-flash-latest", "gemini-2.5-flash"],
+      "anthropic": ["claude-haiku-4-5", "claude-sonnet-4-5"],
+      "openai": ["gpt-5-mini", "gpt-4o-mini"]
+    },
+    "stories_per_section": 18,
+    "enrich_top_per_section": 10,
+    "timeout_s": 90
+  },
+  "browser_ai": {
+    "default_provider": "gemini",
+    "models": { "gemini": "gemini-flash-latest", "anthropic": "claude-haiku-4-5", "openai": "gpt-5-mini" }
+  }
+}
