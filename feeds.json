@@ -118,8 +118,9 @@
       "subsection": "markets",
       "url": "https://www.moneycontrol.com/rss/marketreports.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "blocked/empty from GitHub runners; replaced by Google News aggregator"
     },
     {
       "id": "moneycontrol_business",
@@ -129,8 +130,9 @@
       "subsection": null,
       "url": "https://www.moneycontrol.com/rss/business.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "blocked/empty from GitHub runners; replaced by Google News aggregator"
     },
     {
       "id": "hbl_markets",
@@ -151,8 +153,9 @@
       "subsection": "markets",
       "url": "https://www.financialexpress.com/market/feed/",
       "tier": 2,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "blocked/empty from GitHub runners; replaced by Google News aggregator"
     },
     {
       "id": "ndtvprofit",
@@ -612,6 +615,39 @@
       "section": "tech",
       "subsection": "bigtech",
       "url": "https://news.google.com/rss/search?q=site:reuters.com+technology+when:1d&hl=en-US&gl=US&ceid=US:en",
+      "tier": 1,
+      "enabled": true,
+      "aggregator": true
+    },
+    {
+      "id": "google_moneycontrol",
+      "source_id": "google",
+      "source": "Google",
+      "section": "india",
+      "subsection": "markets",
+      "url": "https://news.google.com/rss/search?q=site:moneycontrol.com+%28sensex+OR+nifty+OR+stocks+OR+market%29+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "tier": 1,
+      "enabled": true,
+      "aggregator": true
+    },
+    {
+      "id": "google_fe",
+      "source_id": "google",
+      "source": "Google",
+      "section": "india",
+      "subsection": null,
+      "url": "https://news.google.com/rss/search?q=site:financialexpress.com+%28market+OR+economy+OR+rbi%29+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "tier": 2,
+      "enabled": true,
+      "aggregator": true
+    },
+    {
+      "id": "google_wsj",
+      "source_id": "google",
+      "source": "Google",
+      "section": "world",
+      "subsection": null,
+      "url": "https://news.google.com/rss/search?q=site:wsj.com+%28markets+OR+economy+OR+stocks+OR+fed%29+when:1d&hl=en-US&gl=US&ceid=US:en",
       "tier": 1,
       "enabled": true,
       "aggregator": true

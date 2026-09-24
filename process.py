@@ -242,7 +242,7 @@ def _classify_subsection(section_cfg: dict, hint, text_lower: str, sub_patterns:
         sid = sub["id"]
         cnt = sum(1 for pat in sub_patterns.get(sid, []) if pat.search(text_lower))
         if hint == sid:
-            cnt += 2
+            cnt += 1  # feed hint breaks ties; keywords decide
         scores[sid] = cnt
     best = max(scores.values())
     tied = [sid for sid, sc in scores.items() if sc == best]
@@ -312,7 +312,7 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
     coverage_bonus = min(len(coverage) * 12, 48)
     importance = _importance_score(text_lower, high_res, medium_res)
     recency = _recency_score(primary.get("published"), now_utc)
-    summary_bonus = 4 if summary else 0
+    summary_bonus = 4 if (summary or "news.google.com" in (primary.get("url") or "")) else 0
     image_bonus = 2 if primary.get("image") else 0
     penalty = -10 if any(p.search(title) for p in _LOWQ_RES) else 0
     score = round(_TIER_WEIGHT.get(tier, 12) + coverage_bonus + importance + recency
@@ -334,14 +334,28 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
 
 # ---------------------------------------------------------------- selection / ranking
 
-def _select_section_stories(stories: list, limit: int, per_source_share: float) -> list:
+def _select_section_stories(stories: list, limit: int, per_source_share: float,
+                            min_sub_share: float = 0.2) -> list:
     """Score-ranked pick up to `limit`, keeping any one source under `per_source_share` of
     the section where candidates allow; if that leaves the quota unfilled (too few diverse
-    sources), the cap is relaxed just enough to fill it."""
+    sources), the cap is relaxed just enough to fill it. Each subsection is first guaranteed
+    ~`min_sub_share` of the slots (when it has candidates) so one busy desk can't crowd out
+    Economy/Companies or Geopolitics."""
     if limit <= 0:
         return []
     ordered = sorted(stories, key=lambda s: -s["score"])
     cap = max(1, math.ceil(limit * per_source_share))
+    quota = max(1, int(limit * min_sub_share))
+    reserved, taken, rsrc = [], set(), {}
+    for sub in dict.fromkeys(s["subsection"] for s in ordered):
+        n = 0
+        for s in ordered:
+            if n >= quota:
+                break
+            if s["subsection"] == sub and rsrc.get(s["source_id"], 0) < cap:
+                reserved.append(s); taken.add(id(s)); n += 1
+                rsrc[s["source_id"]] = rsrc.get(s["source_id"], 0) + 1
+    ordered = reserved + [s for s in ordered if id(s) not in taken]
     selected, leftover, counts = [], [], {}
     for s in ordered:
         if len(selected) >= limit:
@@ -408,6 +422,16 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
     medium_res = [_wb(k) for k in importance_cfg.get("medium", [])]
     keyword_patterns = {s["id"]: _build_keyword_patterns(s) for s in sections_cfg}
 
+    # per-feed funnel (raw -> in window -> printed) for tuning; rendered nowhere, kept in stats
+    funnel: dict = {}
+    for it in raw_items:
+        f = funnel.setdefault(it.get("feed_id") or "?", {"raw": 0, "window": 0, "printed": 0, "newest_h": None})
+        f["raw"] += 1
+        pub = it.get("published")
+        if pub is not None:
+            age = round((now_utc - pub).total_seconds() / 3600, 1)
+            f["newest_h"] = age if f["newest_h"] is None else min(f["newest_h"], age)
+
     # 1) quality + recency window
     filtered = []
     for it in raw_items:
@@ -420,6 +444,8 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             if pub is not None and pub < cutoff:
                 continue
             filtered.append(it)
+            if (it.get("feed_id") or "?") in funnel:
+                funnel[it.get("feed_id") or "?"]["window"] += 1
         except Exception:  # noqa: BLE001 - one bad raw item must never sink the build
             continue
 
@@ -481,7 +507,14 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             key=lambda x: (-x["count"], x["tag"]),
         )[:10]
 
-    stats = {"by_source": by_source, "by_section": stats_by_section, "top_tags": top_tags}
+    url_feed = {it["url"]: it.get("feed_id") for it in raw_items if it.get("url")}
+    for section in out_sections:
+        for st in section["stories"]:
+            fid = url_feed.get(st["url"])
+            if fid in funnel:
+                funnel[fid]["printed"] += 1
+    stats = {"by_source": by_source, "by_section": stats_by_section, "top_tags": top_tags,
+             "funnel": funnel}
     return out_sections, stats
 
 
