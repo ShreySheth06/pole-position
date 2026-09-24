@@ -201,6 +201,11 @@ def _build_user_prompt(sections: list, markets: dict | None, site_cfg: dict, now
              "MARKET SNAPSHOT (values as of last close/session):", _market_snapshot(markets)]
     for section in sections or []:
         parts += ["", f"SECTION {section.get('id')} ({section.get('title')}):", _digest_section(section, n, now_utc)]
+    k = (site_cfg.get("ai", {}) if isinstance(site_cfg, dict) else {}).get("enrich_top_per_section", 10)
+    ids = [s.get("id") for sec in sections or [] for s in (sec.get("stories") or [])[:k] if s.get("id")]
+    if ids:
+        parts += ["", f"REQUIRED: the \"stories\" array must contain one entry for EACH of these {len(ids)} ids "
+                      "(ai_summary + why_it_matters): " + ", ".join(ids)]
     return "\n".join(parts)
 
 def _extract_json(text: str) -> dict:
