@@ -164,6 +164,9 @@ def build(no_ai: bool = False) -> dict:
         brief = safe(ai.make_brief, sections, ai_markets, site, now_utc, label="ai", default=None) \
             or ai.fallback_brief(sections, market_data, now_utc)
 
+    debug = {"candidates": (stats or {}).pop("_candidates", None), "funnel": (stats or {}).pop("funnel", None)}
+    (SITE).mkdir(exist_ok=True)
+    (SITE / "debug.json").write_text(json.dumps(debug, ensure_ascii=False, default=str), encoding="utf-8")
     meta.update(
         sources_ok=sum(1 for h in health if h.get("ok")),
         sources_total=len(health),

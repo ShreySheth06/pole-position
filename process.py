@@ -282,6 +282,9 @@ def _recency_score(published, now_utc: datetime) -> float:
 _TIER_WEIGHT = {1: 30, 2: 22, 3: 12}
 
 
+_DEBUG_PARTS: dict = {}
+
+
 def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
                   high_res: list, medium_res: list, now_utc: datetime) -> dict | None:
     primary = _best_of(cluster)
@@ -317,6 +320,9 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
     penalty = -10 if any(p.search(title) for p in _LOWQ_RES) else 0
     score = round(_TIER_WEIGHT.get(tier, 12) + coverage_bonus + importance + recency
                   + summary_bonus + image_bonus + penalty, 1)
+    _DEBUG_PARTS[id(primary)] = {"feed": primary.get("feed_id"), "tier": tier, "cov": len(coverage),
+                                 "imp": importance, "rec": round(recency, 1), "sum": summary_bonus,
+                                 "img": image_bonus, "pen": penalty, "n": len(cluster)}
 
     published = primary.get("published")
     published_str = published.astimezone(IST).isoformat(timespec="seconds") if published else None
@@ -457,6 +463,7 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
     # 3) exact-duplicate collapse (same URL, or same normalized title from a syndication copy)
     deduped = _exact_dedupe(filtered)
 
+    debug_rows: dict = {}
     out_sections = []
     stats_by_source: dict = {}
     stats_by_section: dict = {}
@@ -473,6 +480,10 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
                 story = None
             if story:
                 stories.append(story)
+                parts = _DEBUG_PARTS.pop(id(_best_of(cluster)), {})
+                debug_rows.setdefault(sid, []).append(
+                    dict(parts, score=story["score"], sub=story["subsection"], src=story["source"],
+                         title=story["title"][:90]))
 
         limit = limits.get(sid, len(stories))
         selected = _select_section_stories(stories, limit, per_source_share)
@@ -514,7 +525,8 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             if fid in funnel:
                 funnel[fid]["printed"] += 1
     stats = {"by_source": by_source, "by_section": stats_by_section, "top_tags": top_tags,
-             "funnel": funnel}
+             "funnel": funnel,
+             "_candidates": {k: sorted(v, key=lambda r: -r["score"])[:120] for k, v in debug_rows.items()}}
     return out_sections, stats
 
 
