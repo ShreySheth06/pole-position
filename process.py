@@ -398,12 +398,18 @@ def _build_top12_order(stories_sorted: list) -> list:
                 if s["id"] not in chosen_ids:
                     top_pool.append(s)
                     chosen_ids.add(s["id"])
-    for s in stories_sorted:
-        if len(top_pool) >= top_n:
-            break
-        if s["id"] not in chosen_ids:
+    per_src: dict = {}
+    for s in top_pool:
+        per_src[s["source_id"]] = per_src.get(s["source_id"], 0) + 1
+    for relax in (False, True):  # first pass: max 3 per outlet on the front of the section
+        for s in stories_sorted:
+            if len(top_pool) >= top_n:
+                break
+            if s["id"] in chosen_ids or (not relax and per_src.get(s["source_id"], 0) >= 3):
+                continue
             top_pool.append(s)
             chosen_ids.add(s["id"])
+            per_src[s["source_id"]] = per_src.get(s["source_id"], 0) + 1
     top_pool = sorted(top_pool[:top_n], key=lambda s: -s["score"])
 
     rest = [s for s in stories_sorted if s["id"] not in {t["id"] for t in top_pool}]

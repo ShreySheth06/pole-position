@@ -209,8 +209,9 @@
       "subsection": "markets",
       "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "feed stale (no new items); WSJ covered via Google News aggregator"
     },
     {
       "id": "wsj_world",
@@ -220,8 +221,9 @@
       "subsection": null,
       "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "feed stale (no new items); WSJ covered via Google News aggregator"
     },
     {
       "id": "wsj_business",
@@ -231,8 +233,9 @@
       "subsection": null,
       "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "feed stale (no new items); WSJ covered via Google News aggregator"
     },
     {
       "id": "bloomberg_markets",
@@ -407,8 +410,9 @@
       "subsection": "markets",
       "url": "https://finance.yahoo.com/news/rssindex",
       "tier": 3,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "feed stale (no new items); WSJ covered via Google News aggregator"
     },
     {
       "id": "bloomberg_tech",
@@ -429,8 +433,9 @@
       "subsection": "bigtech",
       "url": "https://feeds.a.dj.com/rss/RSSWSJD.xml",
       "tier": 1,
-      "enabled": true,
-      "aggregator": false
+      "enabled": false,
+      "aggregator": false,
+      "note": "feed stale (no new items); WSJ covered via Google News aggregator"
     },
     {
       "id": "ft_tech",
