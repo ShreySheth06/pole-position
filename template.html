@@ -1011,7 +1011,7 @@ function norm(x) {
     o.stories = arr(s.stories).filter(function (st) { return st && st.title && st.id; });
     o.subsections = arr(s.subsections).filter(function (x) { return x && x.id; });
     o.videos = arr(s.videos).filter(function (v) { return v && v.title && v.url; });
-    o.social = arr(s.social).filter(function (x) { return x && x.text && x.platform; });
+    o.social = arr(s.social).filter(function (x) { return x && x.text && x.platform && x.platform !== 'x'; });
     return o;
   });
   d.markets = d.markets && Array.isArray(d.markets.groups) ? d.markets : null;
@@ -1305,7 +1305,7 @@ function videosHTML(sec) {
 
 /* ---------------------------------------------------------------- social pulse */
 function platformGlyph(p) {
-  var letter = p === 'x' ? 'X' : p === 'reddit' ? 'r/' : p === 'bluesky' ? 'B' : '?';
+  var letter = p === 'reddit' ? 'r/' : p === 'bluesky' ? 'B' : '?';
   return '<span class="soc-glyph soc-' + esc(p || 'na') + '" aria-hidden="true">' + esc(letter) + '</span>';
 }
 function socialItemHTML(s) {

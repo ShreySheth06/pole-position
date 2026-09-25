@@ -160,15 +160,15 @@ Story counts: india ≤ 40, world ≤ 36, tech ≤ 30 (see site.json limits). ~2
    "thumbnail": "https://i.ytimg.com/vi/VIDEOID/hqdefault.jpg", "views": 12345 | null}
 ],
 "social": [   // ≤ 10 per section. UNVERIFIED chatter — never merged into stories, never sent to the AI brief.
-  {"id": "…", "platform": "reddit" | "x" | "bluesky", "author": "u/name | @handle",
+  {"id": "…", "platform": "reddit" | "bluesky", "author": "u/name | @handle",
    "community": "r/IndianStockMarket" | null, "text": "≤ 280 chars plain text", "url": "https://…",
    "published": "…+05:30" | null, "score": 123 | null,          // upvotes / likes when known
-   "official": true | false}                                    // true only for official institutional accounts (RBI, SEBI, NSE, Fed, …)
+   "official": false}                                           // reserved
 ]
 ```
 ### New fields
 - story `"verified_by"`: int = number of distinct outlets carrying the story (1 + len(coverage)).
 - brief `"verification"`: `{"status": "verified" | "partial" | "n/a", "numbers_checked": 41, "removed": 2}` — every figure in AI text is traced back to the input data; unsupported sentences/items are removed (`n/a` for fallback briefs).
 - market ITEM `"stale": bool` (as_of too old) and `"suspect": bool` (implausible move → change/change_pct set to null).
-- feeds.json entries gain `"kind": "news" | "video" | "social"` (default news) and `"platform"` for social ("reddit" | "bluesky"). X comes from `social.py` (optional, paid API, env `X_BEARER_TOKEN`).
+- feeds.json entries gain `"kind": "news" | "video" | "social"` (default news) and `"platform"` for social ("reddit" | "bluesky"). (X/Twitter was removed at the owner's request on 25 Sep 2026.)
 - Aggregator (Google News) items whose publisher is not a known trusted outlet are dropped.

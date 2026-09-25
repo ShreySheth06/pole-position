@@ -26,7 +26,6 @@ The code uses only the Python standard library, with no servers and no databases
 - **YouTube:** the latest videos from 26 channels, including ET Now, CNBC-TV18, NDTV Profit, Zee Business, Moneycontrol, Bloomberg TV, CNBC, Reuters, WSJ, FT, OpenAI, DeepMind, Anthropic and Karpathy. They're filtered for market relevance, with clickbait and Shorts removed.
 - **Reddit:** top posts of the day from r/IndianStockMarket, r/IndiaInvestments, r/DalalStreetTalks, r/stocks, r/investing, r/economics, r/MachineLearning, r/LocalLLaMA and others.
 - **Bluesky:** a few AI voices.
-- **X (Twitter):** optional, because X charges for its API (about $0.005 per post read). To switch it on, buy credits at console.x.com, create an app and add its Bearer Token as the repository secret `X_BEARER_TOKEN`. The accounts it follows (RBI, SEBI, NSE, Fed, OpenAI and others) are listed in `social.json`. It reads once per day (about 60 posts, roughly $0.30 a day).
 - Social posts and videos appear in their own **Social Pulse** and **On Air** panels, marked *unverified*. They never count as confirmation of a story and are never given to the AI.
 
 ## Accuracy safeguards
