@@ -132,7 +132,7 @@ def _decompress(raw: bytes, content_encoding: str) -> bytes:
 
 
 REDDIT_UA = "pole-position-news/1.0 (personal morning-paper RSS reader; +https://github.com)"
-REDDIT_MIN_INTERVAL_S = 6.0          # Reddit rate-limits bursts (HTTP 429): one request at a time
+REDDIT_MIN_INTERVAL_S = 8.0          # Reddit rate-limits bursts (HTTP 429): one request at a time
 _REDDIT_LOCK = threading.Lock()
 _REDDIT_LAST = [0.0]
 
