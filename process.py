@@ -132,12 +132,31 @@ def _stem(word: str) -> str:
         return word[:-2]
     if len(word) > 4 and word.endswith("s") and not word.endswith("ss"):
         return word[:-1]
+    if len(word) > 5 and word.endswith("ly"):
+        return word[:-2]  # weekly -> week, quarterly -> quarter
     return word
 
 
+_NUM_TOKEN_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+
+def _num_token(raw: str):
+    """Numbers become fuzzy tokens (2 significant figures) so '$14.88 billion' ~ '$14.9 billion'."""
+    try:
+        v = float(raw.replace(",", ""))
+    except ValueError:
+        return None
+    if v < 10 or (v.is_integer() and 1990 <= v <= 2035):
+        return None
+    mag = 10 ** (math.floor(math.log10(v)) - 1)
+    return "n" + str(int(round(v / mag) * mag))
+
+
 def _tokenize(title: str) -> set:
-    words = re.sub(r"[^a-z0-9\s]", " ", (title or "").lower()).split()
-    return {_stem(w) for w in words if len(w) >= 3 and w not in _STOPWORDS}
+    t = (title or "").lower()
+    nums = {n for n in (_num_token(m.group(0)) for m in _NUM_TOKEN_RE.finditer(t)) if n}
+    words = re.sub(r"[^a-z0-9\s]", " ", _NUM_TOKEN_RE.sub(" ", t)).split()
+    return {_stem(w) for w in words if len(w) >= 3 and w not in _STOPWORDS} | nums
 
 
 def _truncate(text: str, limit: int = 420) -> str:
@@ -200,12 +219,23 @@ def _cluster_items(items: list) -> list:
             x = parent[x]
         return x
 
+    size = [1] * n
+
     def union(a, b):
         ra, rb = find(a), find(b)
-        if ra != rb:
+        if ra != rb and size[ra] + size[rb] <= 8:  # guard against chained mega-clusters
             parent[ra] = rb
+            size[rb] += size[ra]
 
     tokens = [_tokenize(it["title"]) for it in items]
+    # rarity weighting: words every market story shares (nifty, india, market) count for little,
+    # distinctive ones (forex, reserves, a company name, a figure) count for a lot
+    df: dict = {}
+    for ts in tokens:
+        for t in ts:
+            df[t] = df.get(t, 0) + 1
+    idf = {t: math.log((n + 1) / (c + 0.5)) for t, c in df.items()}
+    wsum = [sum(idf[t] for t in ts) or 1.0 for ts in tokens]
     for i in range(n):
         ti = tokens[i]
         if not ti:
@@ -219,7 +249,8 @@ def _cluster_items(items: list) -> list:
                 continue
             jaccard = len(shared) / len(ti | tj)
             overlap = len(shared) / min(len(ti), len(tj))
-            if jaccard >= 0.45 or overlap >= 0.6:
+            w_overlap = sum(idf[t] for t in shared) / min(wsum[i], wsum[j])
+            if jaccard >= 0.45 or overlap >= 0.6 or (len(shared) >= 4 and w_overlap >= 0.55):
                 union(i, j)
 
     groups: dict = {}
@@ -365,9 +396,10 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
 
     tier = primary.get("tier", 3)
     sid = section_cfg.get("id")
-    coverage_bonus = min(len(coverage) * 12, 48)
     importance = min(_importance_score(text_lower, high_res, medium_res), 10)
     signal_pts, signal_hits, noise_pts = ANALYST.score(text_lower, sid)
+    # wide syndication of IPO/tip chatter isn't significance: damp coverage for noisy stories
+    coverage_bonus = min(len(coverage) * 12, 48) * (0.25 if noise_pts <= -12 else 1.0)
     companies = ANALYST.companies(f"{title} {summary}", sid)
     largecap = (8 if sid == "india" else 6) if companies else 0
     specific = 3 if _DIGIT_RE.search(title) else 0
