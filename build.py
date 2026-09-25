@@ -126,6 +126,56 @@ def render(data: dict) -> None:
     log(f"rendered site/index.html ({(SITE / 'index.html').stat().st_size / 1024:.0f} KB)")
 
 
+# ---------------------------------------------------------------- Reddit rotation + cache
+# Reddit answers only ~1 unauthenticated request per run from GitHub's servers (HTTP 429 after),
+# so each hourly run refreshes ONE section's Reddit feed and reuses cached posts for the others.
+def _reddit_cache_path() -> Path:
+    return ARCHIVE / "reddit-cache.json"
+
+
+def reddit_rotation(enabled: list, now_utc: datetime) -> tuple[list, dict | None]:
+    reddit = [f for f in enabled if f.get("platform") == "reddit"]
+    if len(reddit) <= 1:
+        return enabled, (reddit[0] if reddit else None)
+    pick = reddit[now_utc.hour % len(reddit)]
+    return [f for f in enabled if f.get("platform") != "reddit" or f is pick], pick
+
+
+def reddit_cache_merge(raw_items: list, health: list, reddit_feeds: list, pick: dict | None,
+                       now_utc: datetime) -> tuple[list, list]:
+    try:
+        path = _reddit_cache_path()
+        cache = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except Exception:  # noqa: BLE001
+        cache = {}
+    if pick:
+        fresh = [i for i in raw_items if i.get("feed_id") == pick["id"]]
+        if fresh:
+            cache[pick["id"]] = {"at": now_utc.isoformat(), "items": [
+                dict(i, published=i["published"].isoformat() if i.get("published") else None) for i in fresh]}
+    for f in reddit_feeds:
+        if pick and f["id"] == pick["id"] and any(i.get("feed_id") == f["id"] for i in raw_items):
+            continue
+        entry = cache.get(f["id"])
+        if not entry:
+            continue
+        age_h = (now_utc - datetime.fromisoformat(entry["at"])).total_seconds() / 3600
+        if age_h > 30:
+            continue
+        items = [dict(i, published=datetime.fromisoformat(i["published"]) if i.get("published") else None)
+                 for i in entry["items"]]
+        raw_items = raw_items + items
+        health = [h for h in health if h.get("id") != f["id"]] + [{
+            "id": f["id"], "name": f.get("source"), "section": f.get("section"), "ok": True,
+            "items": len(items), "ms": 0, "error": f"cached {age_h:.0f}h ago"}]
+    try:
+        ARCHIVE.mkdir(exist_ok=True)
+        _reddit_cache_path().write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        pass
+    return raw_items, health
+
+
 # ---------------------------------------------------------------- main
 def build(no_ai: bool = False) -> dict:
     site = load_json("site.json", {})
@@ -138,6 +188,8 @@ def build(no_ai: bool = False) -> dict:
     social_cfg = load_json("social.json", {})
 
     enabled = [f for f in feeds_cfg.get("feeds", []) if f.get("enabled", True)]
+    reddit_feeds = [f for f in enabled if f.get("platform") == "reddit"]
+    enabled, reddit_pick = reddit_rotation(enabled, now_utc)
     log(f"fetching {len(enabled)} feeds + markets in parallel")
     with cf.ThreadPoolExecutor(4) as ex:
         f_news = ex.submit(safe, feeds.fetch_all, enabled, label="feeds", default=([], []))
@@ -147,6 +199,7 @@ def build(no_ai: bool = False) -> dict:
         raw_items, health = f_news.result()
         x_items, x_health = f_x.result()
         raw_items, health = raw_items + x_items, health + x_health
+        raw_items, health = reddit_cache_merge(raw_items, health, reddit_feeds, reddit_pick, now_utc)
         market_data = f_mkts.result()
         flows = f_flow.result()
 
