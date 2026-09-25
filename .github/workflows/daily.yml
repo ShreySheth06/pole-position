@@ -2,10 +2,9 @@ name: Print the paper
 
 on:
   schedule:
-    - cron: "30 0 * * *"      # 06:00 IST daily        (morning edition)
-    - cron: "0 2 * * 1-5"     # 07:30 IST weekdays     (refresh)
-    - cron: "15 3 * * 1-5"    # 08:45 IST weekdays     (pre-open refresh)
-    - cron: "30 11 * * 1-5"   # 17:00 IST weekdays     (post-close update)
+    # GitHub runs scheduled jobs late at busy times (hours, sometimes), so print every hour at an
+    # off-peak minute: there is always a fresh edition waiting whenever you open the paper.
+    - cron: "17 * * * *"
   workflow_dispatch: {}        # "Run workflow" button = refresh now
   push:
     branches: [main]
@@ -44,6 +43,8 @@ jobs:
         run: python build.py
 
       - name: Save edition to archive (also keeps the schedule alive)
+        env:
+          TZ: Asia/Kolkata
         run: |
           git config user.name  "pole-position-bot"
           git config user.email "actions@users.noreply.github.com"
