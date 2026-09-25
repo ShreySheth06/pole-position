@@ -666,7 +666,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCI_mwTKUhicNzFrhm33MzBQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_cnbc_tv18",
@@ -677,7 +678,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmRbHAgG2k2vDUvb3xsEunQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_ndtv_profit",
@@ -688,7 +690,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC3uJIdRFTGgLWrUziaHbzrg",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_zee_business",
@@ -699,7 +702,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkXopQ3ubd-rnXnStZqCl2w",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_moneycontrol",
@@ -710,7 +714,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UChftTVI0QJmyXkajQYt2tiQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_business_standard",
@@ -721,7 +726,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCaM_6hhzexPvIGLxtCvoGqw",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_mint",
@@ -732,7 +738,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUI9vm69ZbAqRK3q3vKLWCQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_business_today",
@@ -743,7 +750,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCaPHWiExfUWaKsUtENLCv5w",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_bloomberg_television",
@@ -754,7 +762,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIALMKvObZNtJ6AmdCLP7Lg",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_cnbc_television",
@@ -765,7 +774,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCrp_UI8XtuYfpiqluWLD7Lw",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_cnbc",
@@ -776,7 +786,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvJJ_dzjViJCoLf5uKUTwoA",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_yahoo_finance",
@@ -787,7 +798,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCEAZeUIeJs0IjQiqTCdVSIg",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_reuters",
@@ -798,7 +810,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UChqUTb7kYRX8-EiaN3XFrSQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_the_wall_street_journal",
@@ -809,7 +822,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCK7tptUDHh-RYDsdxO1-5QQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_financial_times",
@@ -820,7 +834,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCoUxsWakJucWg46KW5RsvPw",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_the_economist",
@@ -831,7 +846,8 @@
       "subsection": null,
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0p5jTq6Xx_DosDFxVXnWaQ",
       "tier": 2,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "yt_openai",
@@ -977,9 +993,9 @@
       "section": "india",
       "subsection": null,
       "tier": 3,
-      "enabled": true,
+      "enabled": false,
       "url": "https://www.reddit.com/r/IndianStockMarket+IndiaInvestments+DalalStreetTalks/top/.rss?t=day&limit=30",
-      "note": "one combined request per section: Reddit rate-limits unauthenticated bursts"
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "reddit_world",
@@ -991,9 +1007,9 @@
       "section": "world",
       "subsection": null,
       "tier": 3,
-      "enabled": true,
+      "enabled": false,
       "url": "https://www.reddit.com/r/stocks+investing+economics+StockMarket/top/.rss?t=day&limit=30",
-      "note": "one combined request per section: Reddit rate-limits unauthenticated bursts"
+      "note": "removed at owner request (video/social only in AI & Tech)"
     },
     {
       "id": "reddit_tech",

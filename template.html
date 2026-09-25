@@ -603,6 +603,19 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
 .para p{font-size:15px;line-height:1.65;color:var(--ink-2)}
 .para p::first-letter{font:500 3.1em/.8 var(--serif);float:left;margin:.08em .1em 0 0;color:var(--ink)}
 .chat-slot{margin-top:64px}
+.btb-more{margin:14px 0 4px}
+.btb-more a{font:600 10.5px/1 var(--sans);font-stretch:112%;letter-spacing:.14em;text-transform:uppercase;color:var(--rosso);border-bottom:1px solid currentColor;padding-bottom:3px}
+.desk.ibrief{scroll-margin-top:calc(var(--navh) + 16px);margin:8px 0 56px;padding:36px clamp(18px,4vw,48px) 40px;border-radius:2px;border:1px solid #000;overflow:hidden}
+.ibrief .desk-top{margin-bottom:18px}
+.ibrief .desk-grid{margin-top:22px}
+.ibrief .desk-grid .timing{position:static}
+.ibrief .para{margin-top:34px;border-top:1px solid var(--rule);padding-top:16px;max-width:92ch}
+@media (max-width:600px){ .tk{grid-template-columns:42px minmax(0,1fr)} .tk .go{display:none} .tk .no{font-size:26px} }
+.ed-note{margin:0 0 40px;padding:18px 0 0;border-top:1px solid var(--rule);max-width:92ch}
+.ed-note .mk{display:flex;gap:10px;margin-bottom:8px}
+.ed-note .mk em{font-style:normal;color:var(--rosso)}
+.ed-note p{font-size:16px;line-height:1.65;color:var(--ink-2)}
+.ed-note p::first-letter{font:500 3.1em/.8 var(--serif);float:left;margin:.08em .1em 0 0;color:var(--ink)}
 .slot-note{padding:26px;border:1px dashed var(--rule);color:var(--muted);font-size:14px;text-align:center}
 
 /* ============================================================ chat */
@@ -762,7 +775,6 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
     <a class="nav-brand" href="#top" data-act="top">Pole Position</a>
     <div class="nav-links" id="navLinks">
       <a href="#india" data-nav="india"><span class="n">01</span>India</a>
-      <a href="#desk" data-nav="desk" class="desk-l"><span class="d"></span>The Editor's Desk</a>
       <a href="#world" data-nav="world"><span class="n">02</span>World</a>
       <a href="#tech" data-nav="tech"><span class="n">03</span>AI &amp; Tech</a>
     </div>
@@ -785,15 +797,13 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
   <section class="sec" id="india" data-sec="india">
     <div class="wrap">
       <div id="india-head"></div>
+      <div class="desk ibrief hide-on-search" id="desk" aria-label="The Editor's Briefing"><div id="deskBody"></div></div>
       <div id="india-mkts" class="mkts hide-on-search"></div>
       <div id="india-stories"></div>
     </div>
   </section>
 
-  <section class="desk hide-on-search" id="desk" aria-label="The Editor's Desk">
-    <div class="wrap">
-      <div id="deskBody"></div>
-      <div class="chat-slot" id="deskSlot">
+      <div class="chat-slot" id="deskSlot" hidden>
         <div class="chat" id="chat">
           <div class="chat-h">
             <div><h3>Ask the Editor<span class="s">✦</span></h3><p>Questions answered from today's edition — streamed live from your own AI key.</p></div>
@@ -817,12 +827,12 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
           </div>
         </div>
       </div>
-    </div>
-  </section>
+
 
   <section class="sec" id="world" data-sec="world">
     <div class="wrap">
       <div id="world-head"></div>
+      <div class="ed-note hide-on-search" id="world-note" hidden></div>
       <div id="world-mkts" class="mkts hide-on-search"></div>
       <div id="world-stories"></div>
     </div>
@@ -831,6 +841,7 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
   <section class="sec" id="tech" data-sec="tech">
     <div class="wrap">
       <div id="tech-head"></div>
+      <div class="ed-note hide-on-search" id="tech-note" hidden></div>
       <div id="tech-mkts" class="mkts hide-on-search"></div>
       <div id="tech-stories"></div>
     </div>
@@ -1360,7 +1371,7 @@ function renderStories(secId) {
   var all = sec.stories;
   var re = queryRe();
   var html = '';
-  var extras = videosHTML(sec) + socialHTML(sec);
+  var extras = secId === 'tech' ? videosHTML(sec) + socialHTML(sec) : '';
 
   if (S.q) {
     var hits = all.filter(matches);
@@ -1446,8 +1457,7 @@ function renderFront(d) {
     if (b) {
       if (b.headline) right += '<h2>' + esc(b.headline) + '</h2>';
       if (b.summary) right += '<p class="bsum">' + esc(b.summary) + '</p>';
-      var tks = arr(b.takeaways).filter(function (t) { return t && t.text; }).slice(0, 3);
-      if (tks.length) right += '<ol>' + tks.map(function (t) { return '<li>' + takeawayInner(t, true) + '</li>'; }).join('') + '</ol>';
+      if (arr(b.takeaways).length || arr(b.watchlist).length) right += '<p class="btb-more"><a href="#desk">Key takeaways &amp; watch list ↓</a></p>';
     }
     var rows = [marketRow(mfind('nifty'), 'Nifty 50'), marketRow(mfind('sensex'), 'Sensex')];
     grp('futures').slice(0, 2).forEach(function (f) { rows.push(marketRow(f)); });
@@ -1708,16 +1718,15 @@ function renderDesk(d) {
   var fb = isFallback(b);
   var prov = m.ai && m.ai.provider && m.ai.provider !== 'fallback' ? m.ai.provider : (b && b.generated_by !== 'fallback' ? b.generated_by : null);
   var model = m.ai && m.ai.model;
-  var html = '<div class="desk-top"><span class="mk">The Editor\'s Desk <em>· ' + (fb ? 'Auto-digest' : 'AI briefing') + '</em></span><span class="gen">' +
+  var html = '<div class="desk-top"><span class="mk">The Editor\'s Briefing <em>· ' + (fb ? 'Auto-digest' : 'AI · India & markets') + '</em></span><span class="gen">' +
     (fb ? '<span class="auto-pill" style="background:#1F1F23;color:#C9C9CE">Auto-digest</span>' : (prov ? '<span class="dot" style="color:var(--giallo)"></span><b>' + esc(cap(prov)) + '</b>' + (model ? ' · ' + esc(model) : '') : '')) +
     (m.generated_at ? ' · ' + esc(hhmm(m.generated_at)) + ' IST' : '') + '</span></div>' +
-    '<h2 class="desk-title">The Editor\'s Desk</h2><div class="livery"></div>';
+    '';
   if (!b) {
     html += '<p class="desk-sum">The briefing is unavailable for this edition. Headlines below are ranked automatically.</p>';
   } else {
-    html += '<div class="desk-hero">' + (b.headline ? '<h3 class="desk-h">' + esc(b.headline) + '</h3>' : '');
-    html += '<div class="desk-sum">' + (fb ? '' : moodHTML(b.mood)) + (b.summary ? '<p>' + esc(b.summary) + '</p>' : '') + verificationLine(b.verification) +
-      (fb ? '<p class="fallback-hint">This is an automatic digest of the top-ranked headlines. Add a <code>GEMINI_API_KEY</code> secret to the repository to get a written AI briefing each morning' + (safeUrl(m.repo_url) ? ' — <a href="' + esc(safeUrl(m.repo_url).replace(/\/+$/, '') + '/settings/secrets/actions') + '" target="_blank" rel="noopener noreferrer">repository secrets ↗</a>' : '') + '.</p>' : '') + '</div></div>';
+    html += (fb ? '' : verificationLine(b.verification)) +
+      (fb ? '<p class="fallback-hint">This is an automatic digest of the top-ranked headlines. Add a <code>GEMINI_API_KEY</code> secret to the repository to get a written AI briefing each morning' + (safeUrl(m.repo_url) ? ' — <a href="' + esc(safeUrl(m.repo_url).replace(/\/+$/, '') + '/settings/secrets/actions') + '" target="_blank" rel="noopener noreferrer">repository secrets ↗</a>' : '') + '.</p>' : '');
     var tks = arr(b.takeaways).filter(function (t) { return t && t.text; }).slice(0, 7);
     var watch = arr(b.watchlist).filter(function (w) { return w && w.label; }).slice(0, 8);
     var L = '', R = '';
@@ -1733,10 +1742,14 @@ function renderDesk(d) {
         return '<tr><td class="pos" style="--c:' + (SEC_COL[sc] || '#8E8E95') + '">' + (i < 9 ? '0' : '') + (i + 1) + '</td><td class="ev"><b>' + esc(w.label) + '</b>' + (p.rest ? '<span>' + esc(p.rest) + '</span>' : '') + '</td><td class="tm">' + esc(p.time || '—') + (SEC_SHORT[sc] ? '<span class="sc">' + SEC_SHORT[sc] + '</span>' : '') + '</td></tr>';
       }).join('') + '</tbody></table></div>';
     if (L || R) html += '<div class="desk-grid"' + (!L || !R ? ' style="grid-template-columns:1fr"' : '') + '>' + (L ? '<div>' + L + '</div>' : '') + (R ? '<div>' + R + '</div>' : '') + '</div>';
-    var ps = obj(b.sections), paras = [['india', '01', 'India'], ['world', '02', 'World'], ['tech', '03', 'AI & Tech']].filter(function (x) { return ps[x[0]] && String(ps[x[0]]).trim(); });
-    if (paras.length) html += '<div class="paras"' + (paras.length < 3 ? ' style="grid-template-columns:repeat(' + paras.length + ',minmax(0,1fr))"' : '') + '>' + paras.map(function (x) {
-      return '<div class="para"><p class="mk"><span>' + x[1] + '</span>' + esc(x[2]) + '</p><p>' + esc(ps[x[0]]) + '</p></div>';
-    }).join('') + '</div>';
+    var ps = obj(b.sections);
+    if (ps.india && String(ps.india).trim()) html += '<div class="para"><p class="mk"><span>01</span>India, in brief</p><p>' + esc(ps.india) + '</p></div>';
+    [['world', 'World'], ['tech', 'AI & Tech']].forEach(function (x) {
+      var el = $('#' + x[0] + '-note'); if (!el) return;
+      var t = ps[x[0]] && String(ps[x[0]]).trim();
+      el.hidden = !t;
+      el.innerHTML = t ? '<p class="mk">Editor\'s note <em>· ' + esc(x[1]) + '</em></p><p>' + esc(t) + '</p>' : '';
+    });
   }
   host.innerHTML = html;
 }
@@ -2224,7 +2237,7 @@ function onScroll() {
     var nav = $('#secnav'), mast = $('#mast');
     nav.classList.toggle('stuck', mast.getBoundingClientRect().bottom < 0);
     var y = window.innerHeight * 0.35, active = null;
-    ['india', 'desk', 'world', 'tech'].forEach(function (id) { var el = $('#' + id); if (el && !el.hidden && el.offsetParent !== null && el.getBoundingClientRect().top <= y) active = id; });
+    ['india', 'world', 'tech'].forEach(function (id) { var el = $('#' + id); if (el && !el.hidden && el.offsetParent !== null && el.getBoundingClientRect().top <= y) active = id; });
     $$('#navLinks a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-nav') === active); });
   });
 }

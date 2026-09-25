@@ -5,10 +5,9 @@ A personal newspaper for the Indian markets. It **prints itself** in the cloud e
 | Section | What's in it |
 |---|---|
 | **Front page** | The lead story, the 20-second "Before the bell" read and a market snapshot |
-| **01 India** | Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, FII/DII flows, and ranked stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
-| **The Editor's Desk** | The Gemini-written morning briefing (takeaways, "watch today" sheet) plus **Ask the Editor**, which streams answers about today's news |
-| **02 World** | A global index heat-map, US futures, FX, commodities, bond yields, and stories from WSJ, Bloomberg, FT, Reuters, CNBC, MarketWatch, The Economist, Nikkei Asia and BBC |
-| **03 AI & Tech** | Tech bellwethers (incl. Indian IT), a trending-topics chart, and stories from TechCrunch, The Verge, MIT Tech Review, Ars, Wired, VentureBeat, OpenAI, Google, Bloomberg/WSJ/FT tech, ET Tech, Inc42 and Hacker News |
+| **01 India** | The Editor's Briefing (Gemini takeaways, a "watch today" sheet and India in brief), then Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, FII/DII flows, and ranked stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
+| **02 World** | An editor's note, a global index heat-map, US futures, FX, commodities, bond yields, and stories from WSJ, Bloomberg, FT, Reuters, CNBC, MarketWatch, The Economist, Nikkei Asia and BBC |
+| **03 AI & Tech** | An editor's note, tech bellwethers (incl. Indian IT), a trending-topics chart, AI videos on YouTube, Reddit/Bluesky chatter, and stories from TechCrunch, The Verge, MIT Tech Review, Ars, Wired, VentureBeat, OpenAI, Google, Bloomberg/WSJ/FT tech, ET Tech, Inc42 and Hacker News |
 
 ## How it works
 ```
@@ -23,22 +22,23 @@ GitHub Actions (free)                     every hour, around the clock
 The code uses only the Python standard library, with no servers and no databases. It doesn't depend on any Claude subscription. Past editions are kept in `archive/` for 30 days and can be picked from the "Today" menu.
 
 ## Social & video sources
-- **YouTube:** the latest videos from 26 channels, including ET Now, CNBC-TV18, NDTV Profit, Zee Business, Moneycontrol, Bloomberg TV, CNBC, Reuters, WSJ, FT, OpenAI, DeepMind, Anthropic and Karpathy. They're filtered for market relevance, with clickbait and Shorts removed.
-- **Reddit:** top posts of the day from r/IndianStockMarket, r/IndiaInvestments, r/DalalStreetTalks, r/stocks, r/investing, r/economics, r/MachineLearning, r/LocalLLaMA and others.
+These appear in the AI & Tech section only.
+- **YouTube:** the latest videos from OpenAI, Google DeepMind, Anthropic, Bloomberg Tech, Karpathy, Two Minute Papers, AI Explained, Dwarkesh Patel, Fireship and Matthew Berman.
+- **Reddit:** top posts of the day from r/MachineLearning, r/LocalLLaMA, r/OpenAI, r/singularity and r/artificial.
 - **Bluesky:** a few AI voices.
 - Social posts and videos appear in their own **Social Pulse** and **On Air** panels, marked *unverified*. They never count as confirmation of a story and are never given to the AI.
 
 ## Accuracy safeguards
 - **Trusted outlets only:** Google News items from publishers outside the trusted list are dropped.
 - **Confirmation count:** each story shows how many independent outlets carry it ("✓ 3 outlets" or "Single source").
-- **AI fact-check:** every number in the AI briefing is checked against the source data it was given. Sentences and items with figures that can't be traced are deleted, and the Editor's Desk shows the result.
+- **AI fact-check:** every number in the AI briefing is checked against the source data it was given. Sentences and items with figures that can't be traced are deleted, and the Editor's Briefing shows the result.
 - **Market data checks:** implausible one-day moves are blanked, and old prints are marked *stale*.
 
 ## Daily use
 - **Open your link** (`https://<your-username>.github.io/<repo>/`). Add it to your phone's home screen for a one-tap app.
 - **Refresh now:** tap *Refresh* in the top bar, then **Run workflow**. The new edition appears in about 2 minutes.
 - **Keyboard:** `/` search · `j`/`k` next/previous story · `o` open · `s` save · `t` theme · `?` help.
-- **Ask the Editor:** tap ⚙ and paste your Gemini key once per device. The key is stored only in that browser.
+- **Ask the Editor:** the red ✦ Ask button (bottom-right) opens it. Tap ⚙ and paste your Gemini key once per device. The key is stored only in that browser.
 
 ## One-time setup (already done for you, kept here for reference)
 1. Create a GitHub repository and upload these files, including `.github/workflows/daily.yml`.
