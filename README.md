@@ -22,6 +22,19 @@ GitHub Actions (free)                     06:00 · 07:30 · 08:45 · 17:00 IST
 ```
 The code uses only the Python standard library, with no servers and no databases. It doesn't depend on any Claude subscription. Past editions are kept in `archive/` for 30 days and can be picked from the "Today" menu.
 
+## Social & video sources
+- **YouTube:** the latest videos from 26 channels, including ET Now, CNBC-TV18, NDTV Profit, Zee Business, Moneycontrol, Bloomberg TV, CNBC, Reuters, WSJ, FT, OpenAI, DeepMind, Anthropic and Karpathy. They're filtered for market relevance, with clickbait and Shorts removed.
+- **Reddit:** top posts of the day from r/IndianStockMarket, r/IndiaInvestments, r/DalalStreetTalks, r/stocks, r/investing, r/economics, r/MachineLearning, r/LocalLLaMA and others.
+- **Bluesky:** a few AI voices.
+- **X (Twitter):** optional, because X charges for its API (about $0.005 per post read). To switch it on, buy credits at console.x.com, create an app and add its Bearer Token as the repository secret `X_BEARER_TOKEN`. The accounts it follows (RBI, SEBI, NSE, Fed, OpenAI and others) are listed in `social.json`. It reads once per day (about 60 posts, roughly $0.30 a day).
+- Social posts and videos appear in their own **Social Pulse** and **On Air** panels, marked *unverified*. They never count as confirmation of a story and are never given to the AI.
+
+## Accuracy safeguards
+- **Trusted outlets only:** Google News items from publishers outside the trusted list are dropped.
+- **Confirmation count:** each story shows how many independent outlets carry it ("✓ 3 outlets" or "Single source").
+- **AI fact-check:** every number in the AI briefing is checked against the source data it was given. Sentences and items with figures that can't be traced are deleted, and the Editor's Desk shows the result.
+- **Market data checks:** implausible one-day moves are blanked, and old prints are marked *stale*.
+
 ## Daily use
 - **Open your link** (`https://<your-username>.github.io/<repo>/`). Add it to your phone's home screen for a one-tap app.
 - **Refresh now:** tap *Refresh* in the top bar, then **Run workflow**. The new edition appears in about 2 minutes.

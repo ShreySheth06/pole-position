@@ -144,13 +144,9 @@ mark{background:var(--giallo);color:#0B0B0C;padding:0 .08em;border-radius:1px}
 .mast{padding-top:22px;padding-bottom:0;text-align:center}
 .mast-top{display:flex;justify-content:center;align-items:center;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
 .mast-top .side{display:none}
-.mast-title{font-family:var(--serif);font-weight:500;font-size:clamp(38px,10.4vw,124px);line-height:.98;letter-spacing:.005em;text-transform:uppercase;margin:18px 0 12px;font-optical-sizing:auto;white-space:nowrap}
+.mast-title{font-family:var(--serif);font-weight:500;font-size:clamp(38px,10.4vw,124px);line-height:.98;letter-spacing:.005em;text-transform:uppercase;margin:18px 0 20px;font-optical-sizing:auto;white-space:nowrap}
 .mast-title .it{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:var(--rosso)}
-.tricolore{display:flex;justify-content:center;margin:0 auto 16px;width:108px;height:3px;box-shadow:0 0 0 .5px var(--rule)}
-.tricolore i{flex:1}
-.tricolore i:nth-child(1){background:#009246}
-.tricolore i:nth-child(2){background:#FFFFFF}
-.tricolore i:nth-child(3){background:#CE2B37}
+.mast-rule{display:block;margin:0 auto 20px;width:46px;height:2px;background:var(--rosso)}
 .mast-date{display:flex;flex-direction:column;align-items:center;gap:6px;border-top:2px solid var(--rule-ink);padding:10px 0 11px;position:relative}
 .mast-date::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--rule-ink)}
 .mast-date::before{content:"";position:absolute;left:0;right:0;top:2px;height:1px;background:var(--rule-ink)}
@@ -311,6 +307,9 @@ main{display:block}
 .cov a{color:var(--ink-2);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
 .cov a:hover{text-decoration-color:var(--ink)}
 .cov .dotsep{margin:0 .4em;color:var(--faint)}
+.verif{font-weight:600}
+.verif.ok{color:var(--up)}
+.verif.single{color:var(--faint);font-weight:500;text-transform:none;letter-spacing:0}
 .acts{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin:14px -10px 0}
 .act{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;font:600 10px/1 var(--sans);font-stretch:116%;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border-radius:2px;transition:color .2s var(--ease),background .2s var(--ease)}
 .act:hover{color:var(--ink);background:var(--sunk);text-decoration:none}
@@ -354,6 +353,53 @@ main{display:block}
 .empty{padding:36px 0;color:var(--muted);font-family:var(--serif);font-style:italic;font-size:19px}
 .searching .hide-on-search{display:none!important}
 .search-note{margin:-6px 0 18px;font-size:13px;color:var(--muted)}
+
+/* ============================================================ videos rail */
+.panel-h h3 em,.sub-h h3 em{font-style:normal;color:var(--rosso-text)}
+.vids-block{margin-top:40px}
+.vids-rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.vids-rail::-webkit-scrollbar{display:none}
+.vid-card{display:block;flex:0 0 198px;min-width:0;scroll-snap-align:start;color:inherit}
+.vid-card:hover{text-decoration:none}
+.vid-card:hover .vid-title{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+@media (min-width:560px){ .vid-card{flex-basis:228px} }
+@media (min-width:1100px){
+  .vids-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;overflow:visible}
+  .vid-card{flex:none}
+}
+.vid-thumb{position:relative;margin:0;background:#0E0E10}
+.vid-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s var(--ease)}
+.vid-thumb img.ok{opacity:1}
+.vfb{padding:10px 12px;align-items:flex-start;background:
+   radial-gradient(480px 200px at 10% 0%,rgba(212,0,0,.26),transparent 60%),
+   repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 5px),#0E0E10}
+.vfb .mk{color:#D6D4CE;font-size:9.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.vid-play{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--rosso);color:#fff;font-size:9px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.vid-kick{margin-top:10px}
+.vid-title{font:600 14.5px/1.32 var(--serif);letter-spacing:-.002em;margin-top:5px;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ============================================================ social pulse */
+.soc-block{margin-top:40px}
+.unv-chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:26px;border:1px solid var(--rosso-text);color:var(--rosso-text);font:700 9.5px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.soc-note{font:italic 400 13px/1.4 var(--serif);color:var(--muted);margin:-6px 0 18px}
+.soc-list{columns:1;column-gap:40px}
+@media (min-width:820px){ .soc-list{columns:2} }
+.soc-item{break-inside:avoid;padding:14px 0;border-bottom:1px solid var(--rule-2)}
+.soc-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.soc-glyph{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--rule-ink);font:700 9px/1 var(--sans);color:var(--ink);flex:none}
+.soc-who{font:600 13px/1.3 var(--sans);color:var(--ink)}
+.soc-com{font-weight:400;color:var(--muted)}
+.soc-off{font:700 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--up);border:1px solid var(--up);border-radius:3px;padding:2px 6px}
+.soc-meta{font-size:11.5px;color:var(--muted);margin-top:4px}
+.soc-meta .sep{margin:0 .4em;color:var(--faint)}
+.soc-txt{font-size:14px;line-height:1.55;color:var(--ink-2);margin-top:8px}
+.soc-txt.clamp{-webkit-line-clamp:4}
+.soc-link{display:inline-block;margin-top:8px;font:600 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.soc-link:hover{color:var(--ink)}
+
+/* ============================================================ stale / suspect market markers */
+.mkr{font:600 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-left:6px;border-bottom:1px dotted var(--faint);cursor:help}
+.ht .n .mkr,.bwt .n .mkr{margin-left:4px}
 
 /* ============================================================ market panels */
 .mkts{margin-bottom:56px}
@@ -519,6 +565,9 @@ main{display:block}
 .desk-sum .mood{justify-self:start}
 .fallback-hint{font-size:13px;color:var(--muted);margin-top:4px}
 .fallback-hint a,.fallback-hint button{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.desk-verif{margin:0;font:600 12.5px/1.4 var(--sans);display:flex;align-items:center;gap:6px}
+.desk-verif.ok{color:var(--up)}
+.desk-verif.partial{color:var(--giallo)}
 .desk-grid{display:grid;gap:48px;margin-top:48px}
 @media (min-width:1000px){ .desk-grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:64px;align-items:start} .desk-grid .timing{position:sticky;top:calc(var(--navh) + 24px)} }
 .tk-list li{border-top:1px solid var(--rule)}
@@ -628,6 +677,7 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
 .hgrid li.bad .it{color:var(--down)}
 .disc{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
 .disc a{text-decoration:underline;text-underline-offset:3px}
+.foot-note{margin-top:10px;font-size:12px;color:var(--faint)}
 
 /* ============================================================ overlays */
 .fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:35;display:inline-flex;align-items:center;gap:9px;height:52px;padding:0 20px 0 18px;border-radius:52px;background:var(--rosso);color:#fff;font:700 11px/1 var(--sans);font-stretch:118%;letter-spacing:.18em;text-transform:uppercase;box-shadow:0 10px 30px -8px rgba(212,0,0,.55),0 2px 6px rgba(0,0,0,.2);transition:transform .35s var(--ease),box-shadow .35s var(--ease),opacity .3s var(--ease)}
@@ -702,7 +752,7 @@ button.tk:hover .go,button.tk:focus-visible .go{opacity:1;transform:none;color:v
 <header class="mast wrap" id="mast">
   <div class="mast-top"><span class="mk side" id="mEd"></span><span class="mk" id="mTag"></span><span class="mk side" id="mCity">Mumbai · Asia/Kolkata</span></div>
   <h1 class="mast-title" id="mTitle">Pole Position</h1>
-  <div class="tricolore" aria-hidden="true"><i></i><i></i><i></i></div>
+  <span class="mast-rule" aria-hidden="true"></span>
   <div class="mast-date"><span class="mk" id="mLeft"></span><span class="dl" id="mDate"></span><span class="mk" id="mRight"></span></div>
 </header>
 
@@ -925,6 +975,19 @@ function fmtChg(it) { // primary change text: % for prices, bps for yields
 }
 function fmtAbs(it) { return fin(it.change) && !isYield(it) ? signed(it.change, decOf(it)) : ''; }
 function fmtCr(v) { return fin(v) ? signed(v, 1) : '—'; }
+function compactNum(n) {
+  if (!fin(n)) return '';
+  var v = Math.abs(n), sign = n < 0 ? '−' : '';
+  function f(x, d) { return x.toFixed(d).replace(/\.0+$/, ''); }
+  if (v >= 1e9) return sign + f(v / 1e9, v / 1e9 < 10 ? 1 : 0) + 'B';
+  if (v >= 1e6) return sign + f(v / 1e6, v / 1e6 < 10 ? 1 : 0) + 'M';
+  if (v >= 1e3) return sign + f(v / 1e3, v / 1e3 < 10 ? 1 : 0) + 'K';
+  return sign + String(Math.round(v));
+}
+/* ---------------------------------------------------------------- accuracy: stale / suspect market markers */
+function staleTitle(it) { return 'Last update: ' + (it && it.as_of ? dateOnly(it.as_of) : '—'); }
+function staleBadge(it) { return it && it.stale ? ' <i class="mkr" data-tip="' + esc(staleTitle(it)) + '" tabindex="0">stale</i>' : ''; }
+function suspectAttr(it) { return it && it.suspect ? ' data-tip="Move failed sanity check" tabindex="0"' : ''; }
 
 /* ================================================================ state */
 var TODAY = null, DATA = null, IDX = null;
@@ -947,6 +1010,8 @@ function norm(x) {
     var o = Object.assign({}, s);
     o.stories = arr(s.stories).filter(function (st) { return st && st.title && st.id; });
     o.subsections = arr(s.subsections).filter(function (x) { return x && x.id; });
+    o.videos = arr(s.videos).filter(function (v) { return v && v.title && v.url; });
+    o.social = arr(s.social).filter(function (x) { return x && x.text && x.platform; });
     return o;
   });
   d.markets = d.markets && Array.isArray(d.markets.groups) ? d.markets : null;
@@ -1074,7 +1139,8 @@ function renderTicker() {
   if (!items.length) { el.hidden = true; return; }
   var set = items.map(function (it) {
     var dr = dirOf(it);
-    return '<span class="ti"><b>' + esc(label(it)) + '</b><span class="v">' + esc(fmtVal(it)) + '</span><em class="' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</em></span>';
+    var tip = it.stale ? staleTitle(it) : it.suspect ? 'Move failed sanity check' : '';
+    return '<span class="ti"' + (tip ? ' title="' + esc(tip) + '"' : '') + '><b>' + esc(label(it)) + (it.stale ? ' <i class="mkr" aria-hidden="true">stale</i>' : '') + '</b><span class="v">' + esc(fmtVal(it)) + '</span><em class="' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</em></span>';
   }).join('');
   $('#tkTrack').innerHTML = '<div class="tk-set">' + set + '</div><div class="tk-set" aria-hidden="true">' + set + '</div>';
   el.hidden = false;
@@ -1129,6 +1195,12 @@ function subLabel(sec, id) {
   var s = sec && sec.subsections.filter(function (x) { return x.id === id; })[0];
   return s ? s.label : (id ? String(id) : '');
 }
+function verifiedBadge(st) {
+  var n = st.verified_by;
+  if (!fin(n) || n < 1) return '';
+  if (n >= 2) return '<span class="verif ok" title="Reported by ' + n + ' outlets">✓ ' + n + ' outlets</span>';
+  return '<span class="verif single">Single source</span>';
+}
 function kicker(st, sec, withSection) {
   var bits = [];
   if (withSection && sec) bits.push('<span class="sub">' + esc(sec.title || sec.id) + '</span>');
@@ -1137,6 +1209,7 @@ function kicker(st, sec, withSection) {
   if (st.source) bits.push(esc(st.source));
   var r = rel(st.published);
   if (r) bits.push('<time datetime="' + esc(st.published) + '" title="' + esc(hhmm(st.published)) + ' IST">' + esc(r) + '</time>');
+  var vb = verifiedBadge(st); if (vb) bits.push(vb);
   return '<p class="kick">' + bits.join('<span class="sep">·</span>') + '</p>';
 }
 function isSaved(id) { return SAVED.some(function (s) { return s.id === id; }); }
@@ -1205,6 +1278,60 @@ function rowHTML(st, sec) {
     '<button class="act" type="button" data-act="save" aria-pressed="' + sv + '" aria-label="' + (sv ? 'Unsave' : 'Save') + ' story"><span class="g">' + (sv ? '★' : '☆') + '</span></button></li>';
 }
 
+/* ---------------------------------------------------------------- videos rail */
+function videoCard(v) {
+  var thumb = safeUrl(v.thumbnail), u = safeUrl(v.url);
+  var bits = [];
+  if (v.channel) bits.push(esc(v.channel));
+  var r = rel(v.published); if (r) bits.push(esc(r));
+  if (fin(v.views)) bits.push(esc(compactNum(v.views)) + ' views');
+  var meta = bits.join('<span class="sep">·</span>');
+  var inner =
+    '<div class="media vid-thumb" aria-hidden="true">' +
+      '<div class="fb vfb"><span class="mk">' + esc(v.channel || 'Video') + '</span></div>' +
+      (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">' : '') +
+      '<span class="vid-play" aria-hidden="true">▶</span>' +
+    '</div>' +
+    (meta ? '<p class="kick vid-kick">' + meta + '</p>' : '') +
+    '<h4 class="vid-title">' + esc(v.title || '') + '</h4>';
+  return u ? '<a class="vid-card" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + inner + '</a>' : '<div class="vid-card">' + inner + '</div>';
+}
+function videosHTML(sec) {
+  var items = arr(sec && sec.videos);
+  if (!items.length) return '';
+  return '<div class="vids-block"><div class="panel-h"><h3 class="mk">On Air <em>· Video</em></h3></div>' +
+    '<div class="vids-rail" role="list">' + items.map(function (v) { return videoCard(v); }).join('') + '</div></div>';
+}
+
+/* ---------------------------------------------------------------- social pulse */
+function platformGlyph(p) {
+  var letter = p === 'x' ? 'X' : p === 'reddit' ? 'r/' : p === 'bluesky' ? 'B' : '?';
+  return '<span class="soc-glyph soc-' + esc(p || 'na') + '" aria-hidden="true">' + esc(letter) + '</span>';
+}
+function socialItemHTML(s) {
+  var u = safeUrl(s.url);
+  var who = s.author ? esc(s.author) : '';
+  var community = s.community ? ' <span class="soc-com">' + esc(s.community) + '</span>' : '';
+  var bits = [];
+  var r = rel(s.published); if (r) bits.push(esc(r));
+  if (fin(s.score)) bits.push('▲ ' + esc(compactNum(s.score)));
+  var meta = bits.join(' <span class="sep">·</span> ');
+  var text = s.text ? '<p class="soc-txt clamp">' + esc(s.text) + '</p><button class="xbtn" type="button" data-act="expand" hidden>More</button>' : '';
+  return '<article class="soc-item' + (s.official ? ' official' : '') + '">' +
+    '<div class="soc-h">' + platformGlyph(s.platform) + '<span class="soc-who">' + who + community + '</span>' +
+    (s.official ? '<span class="soc-off">Official</span>' : '') + '</div>' +
+    (meta ? '<p class="soc-meta">' + meta + '</p>' : '') + text +
+    (u ? '<a class="soc-link" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">View post ↗</a>' : '') +
+    '</article>';
+}
+function socialHTML(sec) {
+  var items = arr(sec && sec.social);
+  if (!items.length) return '';
+  return '<div class="soc-block"><div class="panel-h"><h3 class="mk">Social Pulse</h3><span class="unv-chip">Unverified · social media</span></div>' +
+    '<p class="soc-note">Chatter, not confirmed reporting — shown as-is, never used for facts or the AI briefing.</p>' +
+    '<div class="soc-list">' + items.map(socialItemHTML).join('') + '</div></div>';
+}
+
 function queryRe() {
   var words = S.q.trim().split(/\s+/).filter(function (w) { return w.length > 0; });
   if (!words.length) return null;
@@ -1233,6 +1360,7 @@ function renderStories(secId) {
   var all = sec.stories;
   var re = queryRe();
   var html = '';
+  var extras = videosHTML(sec) + socialHTML(sec);
 
   if (S.q) {
     var hits = all.filter(matches);
@@ -1243,7 +1371,7 @@ function renderStories(secId) {
     return;
   }
   var cnt = $('#' + secId + '-count'); if (cnt) cnt.textContent = all.length;
-  if (!all.length) { host.innerHTML = '<p class="empty">No ' + esc(sec.title) + ' stories made this edition.</p>'; return; }
+  if (!all.length) { host.innerHTML = '<p class="empty">No ' + esc(sec.title) + ' stories made this edition.</p>' + extras; return; }
 
   // tabs
   var subs = sec.subsections.map(function (x) { return { id: x.id, label: x.label || x.id, n: all.filter(function (s) { return s.subsection === x.id; }).length }; }).filter(function (x) { return x.n > 0; });
@@ -1267,11 +1395,12 @@ function renderStories(secId) {
     html += '<p class="filt">Showing ' + list.length + ' tagged <b style="color:var(--ink)">#' + esc(st.tag) + '</b><button type="button" data-act="tag-clear" data-sec="' + secId + '">Clear filter</button></p>';
   }
   if (secId === S.frontLeadSec && st.sub === 'all' && !st.tag && S.frontLead) list = list.filter(function (s) { return s.id !== S.frontLead; });
-  if (!list.length) { html += '<p class="empty">Nothing here yet.</p>'; host.innerHTML = html; return; }
+  if (!list.length) { html += '<p class="empty">Nothing here yet.</p>' + extras; host.innerHTML = html; return; }
 
   var nC = cardCount(), lead = list[0], cards = list.slice(1, 1 + nC), rest = list.slice(1 + nC);
   html += leadHTML(lead, sec, null, false);
   if (cards.length) html += '<div class="cards">' + cards.map(function (x) { return cardHTML(x, sec, null); }).join('') + '</div>';
+  html += extras;
   if (rest.length) {
     var shown = st.more ? rest : rest.slice(0, 8);
     html += '<div class="morehl"><div class="sub-h"><h3 class="mk">More headlines</h3></div><ol class="rows">' + shown.map(function (x) { return rowHTML(x, sec); }).join('') + '</ol>' +
@@ -1283,7 +1412,7 @@ function cardCount() { return window.innerWidth < 700 ? 6 : 12; }
 var lastCardCount = 0;
 function renderAllStories() { lastCardCount = cardCount(); ['india', 'world', 'tech'].forEach(renderStories); requestAnimationFrame(measureClamps); }
 function measureClamps() {
-  $$('.card .sum.clamp').forEach(function (p) {
+  $$('.card .sum.clamp, .soc-txt.clamp').forEach(function (p) {
     var b = p.nextElementSibling;
     if (b && b.classList.contains('xbtn')) b.hidden = !(p.scrollHeight > p.clientHeight + 2);
   });
@@ -1293,7 +1422,7 @@ function measureClamps() {
 function marketRow(it, name) {
   if (!it) return '';
   var dr = dirOf(it);
-  return '<div class="snap-row"><span class="n" title="' + esc(niceName(it)) + '">' + esc(name || label(it)) + '</span><span class="v">' + esc(fmtVal(it)) + '</span><span class="c ' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span>' + sparkSVG(it.spark, { last: 22 }) + '</div>';
+  return '<div class="snap-row"><span class="n" title="' + esc(niceName(it)) + '">' + esc(name || label(it)) + staleBadge(it) + '</span><span class="v">' + esc(fmtVal(it)) + '</span><span class="c ' + dr + '"' + suspectAttr(it) + '>' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span>' + sparkSVG(it.spark, { last: 22 }) + '</div>';
 }
 function moodHTML(m) {
   if (!m) return '';
@@ -1348,9 +1477,9 @@ function tileHTML(it, name) {
     r52 = '<div class="r52" data-tip="' + esc('52-week range · low ' + fmtN(it.low_52w, decOf(it), locOf(it)) + ' · high ' + fmtN(it.high_52w, decOf(it), locOf(it)) + ' · now ' + p.toFixed(0) + '% of range') + '" tabindex="0"><div class="tr"><span class="fill" style="width:' + p.toFixed(1) + '%"></span><span class="pin" style="left:' + p.toFixed(1) + '%"></span></div>' +
       '<div class="lbls"><span>' + esc(fmtN(it.low_52w, 0, locOf(it))) + '</span><span class="mk">52W</span><span>' + esc(fmtN(it.high_52w, 0, locOf(it))) + '</span></div></div>';
   }
-  return '<div class="tile"><div class="th"><span class="mk">' + esc(name || niceName(it)) + '</span><span class="asof">' + esc(it.as_of ? dateOnly(it.as_of) : '') + '</span></div>' +
+  return '<div class="tile"><div class="th"><span class="mk">' + esc(name || niceName(it)) + staleBadge(it) + '</span><span class="asof">' + esc(it.as_of ? dateOnly(it.as_of) : '') + '</span></div>' +
     '<div class="tv">' + esc(fmtVal(it)) + '</div>' +
-    '<div class="tc ' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + (fmtAbs(it) ? '<span>' + esc(fmtAbs(it)) + '</span>' : '') + '</div>' +
+    '<div class="tc ' + dr + '"' + suspectAttr(it) + '>' + arrow(dr) + ' ' + esc(fmtChg(it)) + (fmtAbs(it) ? '<span>' + esc(fmtAbs(it)) + '</span>' : '') + '</div>' +
     (pts.length > 1 ? '<div class="spk">' + sparkSVG(it.spark, { area: true, dot: dr }) + '</div>' : '') + r52 + '</div>';
 }
 function renderIndiaMarkets(d) {
@@ -1482,8 +1611,11 @@ function heatColor(pct) {
 }
 function heatTile(it) {
   var dr = dirOf(it);
-  return '<div class="ht" style="--h:' + heatColor(it.change_pct) + '" tabindex="0" data-tiph="' + esc('<b>' + esc(niceName(it)) + '</b><br>' + esc(fmtVal(it)) + ' · ' + esc(fmtChg(it)) + (fmtAbs(it) ? ' (' + esc(fmtAbs(it)) + ')' : '') + (it.as_of ? '<br>as of ' + esc(dateOnly(it.as_of)) : '')) + '">' +
-    '<span class="n">' + esc(label(it)) + '</span><span class="v">' + esc(fmtVal(it)) + '</span><span class="c">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span></div>';
+  var tip = '<b>' + esc(niceName(it)) + '</b><br>' + esc(fmtVal(it)) + ' · ' + esc(fmtChg(it)) + (fmtAbs(it) ? ' (' + esc(fmtAbs(it)) + ')' : '') + (it.as_of ? '<br>as of ' + esc(dateOnly(it.as_of)) : '');
+  if (it.suspect) tip += '<br><span style="color:var(--down)">Move failed sanity check</span>';
+  if (it.stale) tip += '<br><span style="color:var(--muted)">' + esc(staleTitle(it)) + '</span>';
+  return '<div class="ht" style="--h:' + heatColor(it.change_pct) + '" tabindex="0" data-tiph="' + esc(tip) + '">' +
+    '<span class="n">' + esc(label(it)) + (it.stale ? ' <i class="mkr" aria-hidden="true">stale</i>' : '') + '</span><span class="v">' + esc(fmtVal(it)) + '</span><span class="c">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span></div>';
 }
 function renderWorldMarkets(d) {
   var host = $('#world-mkts'), html = '';
@@ -1510,7 +1642,7 @@ function renderWorldMarkets(d) {
     return '<table class="mt"><caption class="mk">' + esc((IDX.groups[g[0]] && IDX.groups[g[0]].label) || g[1]) + '</caption><thead><tr><th scope="col">Instrument</th><th scope="col">Last</th><th scope="col">' + (isR ? 'Chg (bps)' : 'Chg') + '</th><th scope="col" class="s">3M</th></tr></thead><tbody>' +
       items.map(function (it) {
         var dr = dirOf(it);
-        return '<tr><td>' + esc(niceName(it)) + (it.short && it.short !== it.name ? '<small>' + esc(it.short) + '</small>' : '') + '</td><td>' + esc(fmtVal(it)) + '</td><td class="c ' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</td><td class="s">' + sparkSVG(it.spark) + '</td></tr>';
+        return '<tr><td>' + esc(niceName(it)) + staleBadge(it) + (it.short && it.short !== it.name ? '<small>' + esc(it.short) + '</small>' : '') + '</td><td>' + esc(fmtVal(it)) + '</td><td class="c ' + dr + '"' + suspectAttr(it) + '>' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</td><td class="s">' + sparkSVG(it.spark) + '</td></tr>';
       }).join('') + '</tbody></table>';
   }).filter(Boolean);
   if (tables.length) html += '<div class="mtables">' + tables.join('') + '</div>';
@@ -1525,7 +1657,10 @@ function renderTechMarkets(d) {
     var us = bw.filter(function (it) { return it.currency !== 'INR'; }), ind = bw.filter(function (it) { return it.currency === 'INR'; });
     function t(it) {
       var dr = dirOf(it), cur = CUR[it.currency] || '';
-      return '<div class="bwt" tabindex="0" data-tiph="' + esc('<b>' + esc(niceName(it)) + '</b><br>' + esc(cur + fmtVal(it)) + ' · ' + esc(fmtChg(it))) + '"><div class="top"><span class="n">' + esc(label(it)) + '</span><span class="c ' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span></div>' +
+      var tip = '<b>' + esc(niceName(it)) + '</b><br>' + esc(cur + fmtVal(it)) + ' · ' + esc(fmtChg(it));
+      if (it.suspect) tip += '<br><span style="color:var(--down)">Move failed sanity check</span>';
+      if (it.stale) tip += '<br><span style="color:var(--muted)">' + esc(staleTitle(it)) + '</span>';
+      return '<div class="bwt" tabindex="0" data-tiph="' + esc(tip) + '"><div class="top"><span class="n">' + esc(label(it)) + (it.stale ? ' <i class="mkr" aria-hidden="true">stale</i>' : '') + '</span><span class="c ' + dr + '">' + arrow(dr) + ' ' + esc(fmtChg(it)) + '</span></div>' +
         '<div class="full">' + esc(niceName(it)) + '</div><div class="v">' + esc(cur + fmtVal(it)) + '</div>' + sparkSVG(it.spark, { last: 44 }) + '</div>';
     }
     left = '<div class="panel-h"><h3 class="mk">Tech bellwethers</h3><span class="aside">Last close · 3-month trend</span></div><div class="bw">' +
@@ -1555,6 +1690,19 @@ function parseWatch(w) {
 }
 var SEC_COL = { india: 'var(--rosso)', world: '#BDBDC2', tech: 'var(--giallo)' };
 var SEC_SHORT = { india: 'IND', world: 'WLD', tech: 'TEC' };
+function verificationLine(v) {
+  v = obj(v);
+  if (!v.status || v.status === 'n/a') return '';
+  var checked = fin(v.numbers_checked) ? v.numbers_checked : null;
+  var removed = fin(v.removed) ? v.removed : 0;
+  if (v.status === 'verified') {
+    return '<p class="desk-verif ok">✓ ' + esc(checked != null ? 'All ' + checked + ' figures traced to source data' : 'All figures traced to source data') + '</p>';
+  }
+  var bits = [];
+  if (removed > 0) bits.push(removed + ' unverifiable claim' + (removed === 1 ? '' : 's') + ' removed');
+  if (checked != null) bits.push(checked + ' figures traced');
+  return bits.length ? '<p class="desk-verif partial">' + esc(bits.join(' · ')) + '</p>' : '';
+}
 function renderDesk(d) {
   var b = d.brief, host = $('#deskBody'), m = d.meta;
   var fb = isFallback(b);
@@ -1568,7 +1716,7 @@ function renderDesk(d) {
     html += '<p class="desk-sum">The briefing is unavailable for this edition. Headlines below are ranked automatically.</p>';
   } else {
     html += '<div class="desk-hero">' + (b.headline ? '<h3 class="desk-h">' + esc(b.headline) + '</h3>' : '');
-    html += '<div class="desk-sum">' + (fb ? '' : moodHTML(b.mood)) + (b.summary ? '<p>' + esc(b.summary) + '</p>' : '') +
+    html += '<div class="desk-sum">' + (fb ? '' : moodHTML(b.mood)) + (b.summary ? '<p>' + esc(b.summary) + '</p>' : '') + verificationLine(b.verification) +
       (fb ? '<p class="fallback-hint">This is an automatic digest of the top-ranked headlines. Add a <code>GEMINI_API_KEY</code> secret to the repository to get a written AI briefing each morning' + (safeUrl(m.repo_url) ? ' — <a href="' + esc(safeUrl(m.repo_url).replace(/\/+$/, '') + '/settings/secrets/actions') + '" target="_blank" rel="noopener noreferrer">repository secrets ↗</a>' : '') + '.</p>' : '') + '</div></div>';
     var tks = arr(b.takeaways).filter(function (t) { return t && t.text; }).slice(0, 7);
     var watch = arr(b.watchlist).filter(function (w) { return w && w.label; }).slice(0, 8);
@@ -1618,14 +1766,15 @@ function renderFoot(d) {
   $('#foot').innerHTML = '<div class="wrap"><div class="foot-brand">' + esc(m.title || 'Pole Position') + '</div><p class="mk">' + esc(m.tagline || '') + '</p>' +
     '<div class="foot-grid"><div><p class="mk" style="color:var(--ink)">This edition</p><dl class="facts">' + facts.map(function (f) { return '<dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd>'; }).join('') + '</dl></div><div>' + hs + '</div></div>' +
     '<div class="disc"><span>Headlines and summaries link to the original publishers. Market data may be delayed; nothing here is investment advice.</span><span>' +
-    (repo ? '<a href="' + esc(repo.replace(/\/+$/, '') + '/actions/workflows/daily.yml') + '" target="_blank" rel="noopener noreferrer">Refresh edition ↗</a> · ' : '') + '<button type="button" data-act="keys" style="text-decoration:underline;text-underline-offset:3px">Keyboard shortcuts</button></span></div></div>';
+    (repo ? '<a href="' + esc(repo.replace(/\/+$/, '') + '/actions/workflows/daily.yml') + '" target="_blank" rel="noopener noreferrer">Refresh edition ↗</a> · ' : '') + '<button type="button" data-act="keys" style="text-decoration:underline;text-underline-offset:3px">Keyboard shortcuts</button></span></div>' +
+    '<p class="foot-note">Social posts and videos are shown as-is and are not used for facts or the AI briefing.</p></div>';
 }
 
 /* ================================================================ render */
 var SEC_DEFAULTS = {
-  india: { id: 'india', number: '01', title: 'India', kicker: 'Markets · Economy · Corporate', stories: [], subsections: [] },
-  world: { id: 'world', number: '02', title: 'World', kicker: 'Global Markets · Economies · Governments', stories: [], subsections: [] },
-  tech: { id: 'tech', number: '03', title: 'AI & Technology', kicker: 'Artificial Intelligence · Big Tech · Startups', stories: [], subsections: [] }
+  india: { id: 'india', number: '01', title: 'India', kicker: 'Markets · Economy · Corporate', stories: [], subsections: [], videos: [], social: [] },
+  world: { id: 'world', number: '02', title: 'World', kicker: 'Global Markets · Economies · Governments', stories: [], subsections: [], videos: [], social: [] },
+  tech: { id: 'tech', number: '03', title: 'AI & Technology', kicker: 'Artificial Intelligence · Big Tech · Startups', stories: [], subsections: [], videos: [], social: [] }
 };
 function render(raw, opts) {
   opts = opts || {};
@@ -1648,7 +1797,7 @@ function render(raw, opts) {
   // hide empty sections entirely (no stories and no market widgets)
   ['india', 'world', 'tech'].forEach(function (id) {
     var sec = IDX.sec[id], mk = $('#' + id + '-mkts');
-    var empty = (!sec || !sec.stories.length) && (!mk || mk.hidden);
+    var empty = (!sec || (!sec.stories.length && !sec.videos.length && !sec.social.length)) && (!mk || mk.hidden);
     $('#' + id).hidden = empty;
     var nl = $('#navLinks a[data-nav="' + id + '"]'); if (nl) nl.hidden = empty;
   });

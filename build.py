@@ -134,15 +134,19 @@ def build(no_ai: bool = False) -> dict:
     now_utc = datetime.now(timezone.utc)
     meta = build_meta(site, now_utc)
 
-    import feeds, process, markets, ai  # noqa: E401  (flat modules owned by the agents)
+    import feeds, process, markets, ai, social  # noqa: E401  (flat modules)
+    social_cfg = load_json("social.json", {})
 
     enabled = [f for f in feeds_cfg.get("feeds", []) if f.get("enabled", True)]
     log(f"fetching {len(enabled)} feeds + markets in parallel")
-    with cf.ThreadPoolExecutor(3) as ex:
+    with cf.ThreadPoolExecutor(4) as ex:
         f_news = ex.submit(safe, feeds.fetch_all, enabled, label="feeds", default=([], []))
+        f_x = ex.submit(safe, social.fetch_x, social_cfg, now_utc, label="x", default=([], []))
         f_mkts = ex.submit(safe, markets.fetch_markets, markets_cfg, now_utc, label="markets", default=None)
         f_flow = ex.submit(safe, markets.fetch_flows, now_utc, label="flows", default=None)
         raw_items, health = f_news.result()
+        x_items, x_health = f_x.result()
+        raw_items, health = raw_items + x_items, health + x_health
         market_data = f_mkts.result()
         flows = f_flow.result()
 

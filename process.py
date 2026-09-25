@@ -416,6 +416,117 @@ def _build_top12_order(stories_sorted: list) -> list:
     return top_pool + rest
 
 
+
+# ---------------------------------------------------------------- videos & social (kept apart from news)
+
+_CLICKBAIT_RE = re.compile(
+    r"world war|\bww3\b|nuclear warning|shock(?:ed|ing|s)?\b|you won'?t believe|exposed|destroy(?:ed|s)?\b|"
+    r"slams?\b|epic\b|insane\b|must watch|breaking!!|#shorts|\bshorts\b", re.I)
+_SOCIAL_JUNK_RE = re.compile(r"\[(?:removed|deleted)\]|\bnsfw\b|\bmeme\b|shitpost", re.I)
+_EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
+VIDEO_LIMIT, SOCIAL_LIMIT = 8, 10
+
+
+def _age_h(pub, now_utc):
+    return None if pub is None else max(0.0, (now_utc - pub).total_seconds() / 3600.0)
+
+
+def _ist(pub):
+    return pub.astimezone(IST).isoformat(timespec="seconds") if pub else None
+
+
+def _is_clickbait(title: str) -> bool:
+    letters = [c for c in title if c.isalpha()]
+    caps = sum(1 for c in letters if c.isupper()) / max(1, len(letters))
+    return bool(_CLICKBAIT_RE.search(title)) or caps > 0.6 or len(_EMOJI_RE.findall(title)) > 1
+
+
+def _pick_videos(items: list, sid: str, relevance_res: list, now_utc) -> list:
+    window = 72 if sid == "tech" else 36
+    scored = []
+    for it in items:
+        if it.get("section") != sid:
+            continue
+        age = _age_h(it.get("published"), now_utc)
+        if age is None or age > window:
+            continue
+        title = it.get("title") or ""
+        if _is_clickbait(title) or "#shorts" in (it.get("summary") or "").lower():
+            continue
+        hits = sum(1 for r in relevance_res if r.search(title.lower()))
+        if sid != "tech" and hits == 0:
+            continue  # broad news channels: only market/economy-relevant videos
+        views = it.get("views") or 0
+        score = min(hits, 5) * 3 + math.log10(views + 1) * 2 + 10 * 0.5 ** (age / 12)
+        scored.append((score, it))
+    scored.sort(key=lambda x: -x[0])
+    out, per_ch = [], {}
+    for _, it in scored:
+        ch = it.get("channel") or it.get("source")
+        if per_ch.get(ch, 0) >= 2:
+            continue
+        per_ch[ch] = per_ch.get(ch, 0) + 1
+        out.append({"id": f"yt:{it['video_id']}", "title": it["title"], "url": it["url"],
+                    "channel": ch, "published": _ist(it.get("published")),
+                    "thumbnail": it.get("thumbnail"), "views": it.get("views")})
+        if len(out) >= VIDEO_LIMIT:
+            break
+    return out
+
+
+def _pick_social(items: list, sid: str, low_value: list, now_utc) -> list:
+    pos: dict = {}
+    by_platform: dict = {}
+    for it in items:
+        if it.get("section") != sid:
+            continue
+        fid = it.get("feed_id") or "?"
+        pos[fid] = pos.get(fid, -1) + 1
+        age = _age_h(it.get("published"), now_utc)
+        if age is not None and age > 30:
+            continue
+        title, body = (it.get("title") or "").strip(), (it.get("text") or "").strip()
+        hay = f"{title} {body}".lower()
+        if _SOCIAL_JUNK_RE.search(hay) or any(p in hay for p in low_value):
+            continue
+        if it.get("platform") == "reddit":
+            text = title if not body else f"{title} — {body}"
+        else:
+            text = body or title
+        text = text if len(text) <= 280 else text[:279].rsplit(" ", 1)[0] + "…"
+        if len(text) < 15:
+            continue
+        # ranking inside a platform: X by engagement, Reddit by its own top-of-day order, else recency
+        if it.get("score") is not None:
+            rank = -math.log10((it.get("score") or 0) + 1)
+        elif it.get("platform") == "reddit":
+            rank = pos[fid]
+        else:
+            rank = age if age is not None else 99
+        by_platform.setdefault(it.get("platform"), []).append((rank, it, text))
+    for lst in by_platform.values():
+        lst.sort(key=lambda x: x[0])
+    # interleave platforms so no single network dominates; ≤ 4 per community/author
+    out, per_src, queues = [], {}, [list(v) for v in by_platform.values()]
+    while queues and len(out) < SOCIAL_LIMIT:
+        for q in list(queues):
+            if not q:
+                queues.remove(q)
+                continue
+            _, it, text = q.pop(0)
+            key = it.get("community") or it.get("author")
+            if per_src.get(key, 0) >= 4:
+                continue
+            per_src[key] = per_src.get(key, 0) + 1
+            out.append({"id": hashlib.sha1(it["url"].encode()).hexdigest()[:10],
+                        "platform": it.get("platform"), "author": it.get("author"),
+                        "community": it.get("community"), "text": text, "url": it["url"],
+                        "published": _ist(it.get("published")), "score": it.get("score"),
+                        "official": bool(it.get("official"))})
+            if len(out) >= SOCIAL_LIMIT:
+                break
+    return out
+
 # ---------------------------------------------------------------- public API
 
 def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[list, dict]:
@@ -443,6 +554,30 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
         if pub is not None:
             age = round((now_utc - pub).total_seconds() / 3600, 1)
             f["newest_h"] = age if f["newest_h"] is None else min(f["newest_h"], age)
+
+    # 0) split by kind: only news is ranked/clustered; videos & social stay separate and never
+    #    count as confirmation of a story (accuracy). Unknown Google-News publishers are dropped.
+    try:
+        from feeds import SOURCE_NAME_MAP
+        trusted = set(SOURCE_NAME_MAP.values())
+    except Exception:  # noqa: BLE001
+        trusted = None
+    video_items = [it for it in raw_items if it.get("kind") == "video"]
+    social_items = [it for it in raw_items if it.get("kind") == "social"]
+    news_items, untrusted = [], 0
+    for it in raw_items:
+        if it.get("kind", "news") != "news":
+            continue
+        if trusted is not None and it.get("aggregator") and it.get("source_id") not in trusted:
+            untrusted += 1
+            continue
+        news_items.append(it)
+    if untrusted:
+        print(f"[process] dropped {untrusted} aggregator items from unrecognised publishers", flush=True)
+    raw_items = news_items
+    video_res = [_wb(k) for sec in sections_cfg for sub in sec.get("subsections", [])
+                 if sub["id"] in ("markets", "economy", "corporate") for k in sub.get("keywords", [])]
+    video_res += high_res
 
     # 1) quality + recency window
     filtered = []
@@ -497,6 +632,7 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
         for i, s in enumerate(ordered, start=1):
             s["rank"] = i
             s["is_lead"] = i == 1
+            s["verified_by"] = 1 + len(s.get("coverage") or [])  # distinct outlets carrying it
 
         out_sections.append({
             "id": sid, "number": section_cfg["number"], "title": section_cfg["title"],
@@ -504,6 +640,10 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             "subsections": [{"id": sub["id"], "label": sub["label"]}
                              for sub in section_cfg["subsections"]],
             "stories": ordered,
+            "videos": _pick_videos(video_items, sid,
+                                   video_res if sid != "tech" else keyword_patterns[sid].get("ai", []),
+                                   now_utc),
+            "social": _pick_social(social_items, sid, low_value_patterns, now_utc),
         })
         stats_by_section[sid] = len(ordered)
         for s in ordered:

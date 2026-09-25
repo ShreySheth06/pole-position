@@ -185,6 +185,34 @@ def _format_item(cfg: dict, raw: dict) -> dict | None:
         item["change_bps"] = round(change * 100, 1) if change is not None else None
     return item
 
+# ---- accuracy guards: implausible one-day moves are blanked, old prints are flagged -------
+MOVE_LIMIT_PCT = {"india": 12, "global": 12, "sectors": 12, "futures": 12, "tech": 25,
+                  "fx": 5, "commodities": 20, "crypto": 30}
+MAX_BPS = 60
+STALE_DAYS = {"crypto": 1, "futures": 1}
+
+
+def _sanity(item: dict, group_id: str, today) -> dict:
+    as_of = datetime.fromisoformat(item["as_of"]).date() if item.get("as_of") else None
+    item["stale"] = bool(as_of and (today - as_of).days > STALE_DAYS.get(group_id, 4))
+    suspect = False
+    if item.get("unit") == "%":
+        bps = item.get("change_bps")
+        suspect = bps is not None and abs(bps) > MAX_BPS
+    else:
+        pct = item.get("change_pct")
+        suspect = pct is not None and abs(pct) > MOVE_LIMIT_PCT.get(group_id, 15)
+    if suspect:
+        log(f"suspect move blanked: {item['symbol']} {item.get('change_pct')}% / {item.get('change_bps')} bps")
+        item["change"] = item["change_pct"] = None
+        if "change_bps" in item:
+            item["change_bps"] = None
+    item["suspect"] = suspect
+    if item["stale"]:
+        log(f"stale print flagged: {item['symbol']} as of {item.get('as_of')}")
+    return item
+
+
 def fetch_markets(markets_cfg: dict, now_utc: datetime) -> dict | None:
     """Fetch each symbol once, format per group occurrence. Drops failed symbols and empty
     groups; returns None if everything failed. Never raises."""
@@ -222,8 +250,8 @@ def fetch_markets(markets_cfg: dict, now_utc: datetime) -> dict | None:
                 except Exception as e:  # noqa: BLE001
                     log(f"failed to format {cfg.get('symbol')}: {e}")
                     item = None
-                if item is not None:
-                    items_out.append(item)
+                if item is not None and item.get("value") and item["value"] > 0:
+                    items_out.append(_sanity(item, g.get("id"), now_utc.astimezone(IST).date()))
             if items_out:
                 groups_out.append({"id": g.get("id"), "label": g.get("label"), "items": items_out})
             else:

@@ -150,3 +150,25 @@ Story counts: india ≤ 40, world ≤ 36, tech ≤ 30 (see site.json limits). ~2
 - `brief` may carry `"model"` (build.py moves it to `meta.ai.model`).
 - The template contains exactly `<script id="edition-data" type="application/json">__EDITION_DATA__</script>`; build.py replaces the placeholder with the JSON.
   Past editions live at `archive/<YYYY-MM-DD>.json` (same schema) next to index.html.
+
+## v2 addendum (25 Sep 2026): social + video sources, accuracy safeguards
+### New per-section arrays (process.py fills; template renders; both may be empty [])
+```jsonc
+"videos": [   // ≤ 8 per section, newest/most relevant first. From YouTube channel RSS.
+  {"id": "yt:VIDEOID", "title": "…", "url": "https://www.youtube.com/watch?v=VIDEOID",
+   "channel": "CNBC-TV18", "published": "2026-09-24T18:01:00+05:30",
+   "thumbnail": "https://i.ytimg.com/vi/VIDEOID/hqdefault.jpg", "views": 12345 | null}
+],
+"social": [   // ≤ 10 per section. UNVERIFIED chatter — never merged into stories, never sent to the AI brief.
+  {"id": "…", "platform": "reddit" | "x" | "bluesky", "author": "u/name | @handle",
+   "community": "r/IndianStockMarket" | null, "text": "≤ 280 chars plain text", "url": "https://…",
+   "published": "…+05:30" | null, "score": 123 | null,          // upvotes / likes when known
+   "official": true | false}                                    // true only for official institutional accounts (RBI, SEBI, NSE, Fed, …)
+]
+```
+### New fields
+- story `"verified_by"`: int = number of distinct outlets carrying the story (1 + len(coverage)).
+- brief `"verification"`: `{"status": "verified" | "partial" | "n/a", "numbers_checked": 41, "removed": 2}` — every figure in AI text is traced back to the input data; unsupported sentences/items are removed (`n/a` for fallback briefs).
+- market ITEM `"stale": bool` (as_of too old) and `"suspect": bool` (implausible move → change/change_pct set to null).
+- feeds.json entries gain `"kind": "news" | "video" | "social"` (default news) and `"platform"` for social ("reddit" | "bluesky"). X comes from `social.py` (optional, paid API, env `X_BEARER_TOKEN`).
+- Aggregator (Google News) items whose publisher is not a known trusted outlet are dropped.

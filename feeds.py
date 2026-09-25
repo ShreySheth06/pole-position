@@ -130,8 +130,14 @@ def _decompress(raw: bytes, content_encoding: str) -> bytes:
     return raw
 
 
+REDDIT_UA = "pole-position-news/1.0 (personal morning-paper RSS reader; +https://github.com)"
+
+
 def _http_get(url: str, timeout: int) -> tuple[bytes, str]:
-    req = urllib.request.Request(url, headers=HEADERS)
+    headers = dict(HEADERS)
+    if "reddit.com" in url:
+        headers["User-Agent"] = REDDIT_UA  # Reddit blocks spoofed browser UAs; be honest
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         raw = resp.read()
         raw = _decompress(raw, resp.headers.get("Content-Encoding", ""))
@@ -299,9 +305,37 @@ def _fields_from_element(item, is_atom: bool) -> dict:
 
     source_name = _text_of((g.get("source") or [None])[0])
 
+    # --- video / social extras (YouTube Atom, Reddit Atom, Bluesky RSS) ---
+    extras: dict = {}
+    for v in g.get("videoId", []):                       # yt:videoId
+        extras["video_id"] = (_text_of(v) or "").strip()
+    for grp in g.get("group", []):                       # media:group
+        if _ns_of(grp.tag) != NS_MEDIA:
+            continue
+        for el in grp.iter():
+            name = _local(el.tag)
+            if name == "thumbnail" and el.get("url"):
+                extras.setdefault("thumbnail", el.get("url"))
+            elif name == "statistics" and el.get("views"):
+                try:
+                    extras["views"] = int(el.get("views"))
+                except ValueError:
+                    pass
+            elif name == "description" and not desc_raw:
+                desc_raw = _text_of(el) or ""
+    for a in g.get("author", []):                        # atom:author/name (Reddit, YouTube)
+        nm = next((_text_of(c) for c in a if _local(c.tag) == "name"), None) or _text_of(a)
+        if nm and nm.strip():
+            extras["author"] = nm.strip()
+            break
+    for c in g.get("category", []):                      # Reddit: <category term="sub" label="r/sub"/>
+        if c.get("label", "").startswith("r/"):
+            extras["community"] = c.get("label")
+            break
+
     return {
         "title": title, "link": link, "desc_raw": desc_raw, "content_raw": content_raw,
-        "date_raw": date_raw, "image": image, "source_name": source_name,
+        "date_raw": date_raw, "image": image, "source_name": source_name, "extras": extras,
     }
 
 
@@ -440,9 +474,16 @@ def _resolve_source(source_name: str | None, feed: dict) -> tuple[str, str]:
 
 # ---------------------------------------------------------------- item building
 
+_REDDIT_TAIL_RE = re.compile(r"\s*submitted by\s+/?u/.*$", re.I | re.S)
+
+
 def _build_item(fields: dict, feed: dict, default_tz, now_utc: datetime) -> dict | None:
+    kind = feed.get("kind", "news")
     raw_title = fields.get("title")
     link = fields.get("link")
+    if kind == "social" and not raw_title:
+        # Bluesky posts have no title: use the post text itself
+        raw_title = (fields.get("desc_raw") or fields.get("content_raw") or "")[:200]
     if not raw_title or not link:
         return None
     title = clean_text(raw_title)
@@ -467,7 +508,7 @@ def _build_item(fields: dict, feed: dict, default_tz, now_utc: datetime) -> dict
 
     source_id, source = _resolve_source(fields.get("source_name"), feed)
 
-    return {
+    item = {
         "title": title,
         "url": link.strip(),
         "summary": summary,
@@ -479,7 +520,30 @@ def _build_item(fields: dict, feed: dict, default_tz, now_utc: datetime) -> dict
         "section": feed["section"],
         "subsection": feed.get("subsection"),
         "tier": feed.get("tier", 3),
+        "kind": kind,
+        "aggregator": bool(feed.get("aggregator")),
     }
+    if kind == "video":
+        ex = fields.get("extras") or {}
+        vid = ex.get("video_id") or ""
+        if not vid:
+            m = re.search(r"[?&]v=([\w-]{6,})", link)
+            vid = m.group(1) if m else ""
+        if not vid:
+            return None
+        item.update(video_id=vid, channel=feed.get("source"), views=ex.get("views"),
+                    thumbnail=f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+                    url=f"https://www.youtube.com/watch?v={vid}")
+    elif kind == "social":
+        ex = fields.get("extras") or {}
+        text = _REDDIT_TAIL_RE.sub("", summary or "").strip()
+        if feed.get("platform") == "reddit":
+            text = text if len(text) > 20 else ""        # link posts: title carries the content
+        item.update(platform=feed.get("platform"),
+                    author=(ex.get("author") or feed.get("source") or "").lstrip("/"),
+                    community=ex.get("community") or feed.get("community"), text=text,
+                    score=None, official=False)
+    return item
 
 
 def _fetch_one(feed: dict, timeout: int) -> tuple[list[dict], dict]:
