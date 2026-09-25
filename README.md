@@ -12,7 +12,7 @@ A personal newspaper for the Indian markets. It **prints itself** in the cloud e
 
 ## How it works
 ```
-GitHub Actions (free)                     06:00 · 07:30 · 08:45 · 17:00 IST
+GitHub Actions (free)                     every hour, around the clock
    └─ python build.py
         ├─ feeds.py    → ~56 RSS feeds, in parallel
         ├─ process.py  → de-duplicate, cluster the same story across outlets, classify, rank

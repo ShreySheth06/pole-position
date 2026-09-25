@@ -17,6 +17,7 @@ import json
 import os
 import re
 import socket
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -131,9 +132,23 @@ def _decompress(raw: bytes, content_encoding: str) -> bytes:
 
 
 REDDIT_UA = "pole-position-news/1.0 (personal morning-paper RSS reader; +https://github.com)"
+REDDIT_MIN_INTERVAL_S = 6.0          # Reddit rate-limits bursts (HTTP 429): one request at a time
+_REDDIT_LOCK = threading.Lock()
+_REDDIT_LAST = [0.0]
+
+
+def _throttle(url: str) -> None:
+    if "reddit.com" not in url:
+        return
+    with _REDDIT_LOCK:                # serialises Reddit calls while other feeds run in parallel
+        wait = _REDDIT_LAST[0] + REDDIT_MIN_INTERVAL_S - time.time()
+        if wait > 0:
+            time.sleep(wait)
+        _REDDIT_LAST[0] = time.time()
 
 
 def _http_get(url: str, timeout: int) -> tuple[bytes, str]:
+    _throttle(url)
     headers = dict(HEADERS)
     if "reddit.com" in url:
         headers["User-Agent"] = REDDIT_UA  # Reddit blocks spoofed browser UAs; be honest
@@ -150,7 +165,7 @@ def _fetch_with_retry(url: str, timeout: int) -> tuple[bytes, str]:
         return _http_get(url, timeout)
     except urllib.error.HTTPError as e:
         if e.code == 429 or 500 <= e.code < 600:
-            time.sleep(RETRY_DELAY_S)
+            time.sleep(12 if (e.code == 429 and "reddit.com" in url) else RETRY_DELAY_S)
             return _http_get(url, timeout)
         raise
     except (urllib.error.URLError, TimeoutError, socket.timeout, OSError):
@@ -574,7 +589,7 @@ def _fetch_one(feed: dict, timeout: int) -> tuple[list[dict], dict]:
 
 # ---------------------------------------------------------------- public API
 
-def fetch_all(feeds: list[dict], timeout: int = 15, max_workers: int = 16) -> tuple[list[dict], list[dict]]:
+def fetch_all(feeds: list[dict], timeout: int = 15, max_workers: int = 32) -> tuple[list[dict], list[dict]]:
     """Fetch every feed in parallel. Never raises; a broken feed just shows up in `health`."""
     raw_items: list[dict] = []
     health: list[dict] = []

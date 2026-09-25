@@ -483,7 +483,7 @@ def _pick_social(items: list, sid: str, low_value: list, now_utc) -> list:
         fid = it.get("feed_id") or "?"
         pos[fid] = pos.get(fid, -1) + 1
         age = _age_h(it.get("published"), now_utc)
-        if age is not None and age > 30:
+        if age is not None and age > (30 if it.get("platform") == "reddit" else 48):
             continue
         title, body = (it.get("title") or "").strip(), (it.get("text") or "").strip()
         hay = f"{title} {body}".lower()
