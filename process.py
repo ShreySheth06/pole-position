@@ -156,7 +156,9 @@ def _passes_quality_filters(item: dict, low_value_patterns: list) -> bool:
     if len(title) < 25:
         return False
     hay = f"{title} {item.get('url', '')}".lower()
-    return not any(pat in hay for pat in low_value_patterns)
+    if any(pat in hay for pat in low_value_patterns):
+        return False
+    return not ANALYST.dropped(title)
 
 
 def _best_of(items: list) -> dict:
@@ -282,6 +284,56 @@ def _recency_score(published, now_utc: datetime) -> float:
 _TIER_WEIGHT = {1: 30, 2: 22, 3: 12}
 
 
+# ---------------------------------------------------------------- analyst relevance model (analyst.json)
+# What matters to an equity analyst: earnings, broker calls, deals, orders, policy, macro prints, rates,
+# flows, index events, credit, market-wide moves, and large-cap names. Noise (SME IPO chatter, stock
+# tips, live blogs, consumer tech) is pushed down; personal-finance/lifestyle items are dropped.
+
+class _Analyst:
+    def __init__(self):
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyst.json")
+        try:
+            with open(path, encoding="utf-8") as f:
+                cfg = json.load(f)
+        except Exception:  # noqa: BLE001 - model is optional
+            cfg = {}
+        comp = lambda ps: [re.compile(p, re.I) for p in ps]  # noqa: E731
+        self.signals = [(s["name"], s.get("weight", 5), set(s.get("sections", ["india", "world", "tech"])),
+                         comp(s.get("patterns", []))) for s in cfg.get("signals", [])]
+        self.noise = [(n["name"], n.get("weight", -10), set(n.get("sections", ["india", "world", "tech"])),
+                       comp(n.get("patterns", []))) for n in cfg.get("noise", [])]
+        self.drop = comp(cfg.get("drop", []))
+
+        def uni(entries):
+            out = []
+            for e in entries:
+                pats = comp(e.get("aliases", []))
+                pats += [re.compile(r"\b" + re.escape(a) + r"\b") for a in e.get("acronyms", [])]  # case-sensitive
+                out.append((e["name"], pats))
+            return out
+        self.universe = uni(cfg.get("universe", []))
+        self.global_universe = uni(cfg.get("global_universe", []))
+
+    def dropped(self, text: str) -> bool:
+        return any(p.search(text) for p in self.drop)
+
+    def companies(self, text: str, sid: str) -> list:
+        pool = self.universe if sid == "india" else self.global_universe + self.universe
+        names = [n for n, pats in pool if any(p.search(text) for p in pats)]
+        if len(names) > 1 and "Tata Group" in names:
+            names.remove("Tata Group")
+        return names
+
+    def score(self, text: str, sid: str) -> tuple[float, list, float]:
+        hits = [n for n, w, secs, pats in self.signals if sid in secs and any(p.search(text) for p in pats)]
+        pos = min(sum(w for n, w, secs, pats in self.signals if n in hits), 30)
+        neg = max(sum(w for n, w, secs, pats in self.noise if sid in secs and any(p.search(text) for p in pats)), -30)
+        return pos, hits, neg
+
+
+ANALYST = _Analyst()
+_DIGIT_RE = re.compile(r"[0-9]")
+
 _DEBUG_PARTS: dict = {}
 
 
@@ -312,17 +364,31 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
     tags = _match_tags(text_lower)
 
     tier = primary.get("tier", 3)
+    sid = section_cfg.get("id")
     coverage_bonus = min(len(coverage) * 12, 48)
-    importance = _importance_score(text_lower, high_res, medium_res)
+    importance = min(_importance_score(text_lower, high_res, medium_res), 10)
+    signal_pts, signal_hits, noise_pts = ANALYST.score(text_lower, sid)
+    companies = ANALYST.companies(f"{title} {summary}", sid)
+    largecap = (8 if sid == "india" else 6) if companies else 0
+    specific = 3 if _DIGIT_RE.search(title) else 0
     recency = _recency_score(primary.get("published"), now_utc)
     summary_bonus = 4 if (summary or "news.google.com" in (primary.get("url") or "")) else 0
     image_bonus = 2 if primary.get("image") else 0
     penalty = -10 if any(p.search(title) for p in _LOWQ_RES) else 0
     score = round(_TIER_WEIGHT.get(tier, 12) + coverage_bonus + importance + recency
-                  + summary_bonus + image_bonus + penalty, 1)
+                  + summary_bonus + image_bonus + penalty
+                  + signal_pts + largecap + specific + noise_pts, 1)
+    # company-specific news (earnings / deals / orders / broker calls) belongs under Companies
+    if sid == "india" and companies and subsection == "markets" and \
+            {"Earnings", "Deals & capital", "Orders & capex", "Broker call"} & set(signal_hits) and \
+            not {"Macro data", "Rates & central banks", "Flows & positioning"} & set(signal_hits):
+        subsection = "corporate"
+    tags = (companies[:2] + [t for t in tags if t not in companies[:2]])[:4]
     _DEBUG_PARTS[id(primary)] = {"feed": primary.get("feed_id"), "tier": tier, "cov": len(coverage),
                                  "imp": importance, "rec": round(recency, 1), "sum": summary_bonus,
-                                 "img": image_bonus, "pen": penalty, "n": len(cluster)}
+                                 "img": image_bonus, "pen": penalty, "n": len(cluster),
+                                 "sig": signal_pts, "hits": signal_hits, "noise": noise_pts,
+                                 "cos": companies[:3]}
 
     published = primary.get("published")
     published_str = published.astimezone(IST).isoformat(timespec="seconds") if published else None
@@ -527,6 +593,108 @@ def _pick_social(items: list, sid: str, low_value: list, now_utc) -> list:
                 break
     return out
 
+
+# ---------------------------------------------------------------- exchange filings (NSE archive RSS)
+# Primary-source disclosures: material announcements, the results/board-meeting calendar and
+# corporate actions. Routine compliance filings are dropped; large caps float to the top.
+
+_ROUTINE_RE = re.compile(
+    r"trading window|newspaper publication|loss of share cert|duplicate share|certificate under|reg(ulation)?\.? ?74|"
+    r"74\(5\)|statement of investor complaints|shareholders meeting|book closure|compliance certificate|"
+    r"change in registered office|record date|postal ballot|e-voting|updates?-xbrl|annual report|"
+    r"secretarial compliance|reconciliation of share capital|closure of trading", re.I)
+_SUBJECT_WEIGHT = [
+    (re.compile(r"financial result|outcome of board meeting", re.I), 30),
+    (re.compile(r"acquisition|amalgamation|merger|scheme of arrangement|demerger|takeover|open offer", re.I), 28),
+    (re.compile(r"order|contract|bagging|award", re.I), 24),
+    (re.compile(r"credit rating", re.I), 20),
+    (re.compile(r"fund raising|qip|preferential|rights issue|allotment of securities|buyback|dividend|bonus|split", re.I), 18),
+    (re.compile(r"resignation|appointment|change in (director|management|kmp)|cessation", re.I), 16),
+    (re.compile(r"investor presentation|analysts?/institutional|analyst.*meet|con\.? ?call|earnings call|press release", re.I), 14),
+    (re.compile(r"clarification|action\(s\) taken|order passed|litigation|regulatory|penalt|search|raid|fraud|default", re.I), 18),
+]
+_SUBJ_RE = re.compile(r"\|\s*SUBJECT:\s*(.+)$", re.I)
+_MEET_RE = re.compile(r"\|\s*Meeting Date:\s*(\d{1,2}-[A-Za-z]{3}-\d{4})", re.I)
+_PURPOSE_RE = re.compile(r"PURPOSE:\s*([^|]+)", re.I)
+_RECORD_RE = re.compile(r"RECORD DATE:\s*(\d{1,2}-[A-Za-z]{3}-\d{4})", re.I)
+_EXDATE_RE = re.compile(r"Ex-Date:\s*(\d{1,2}-[A-Za-z]{3}-\d{4})", re.I)
+
+
+def _nse_date(s):
+    try:
+        return datetime.strptime(s, "%d-%b-%Y").date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _clip(t: str, n: int) -> str:
+    t = " ".join((t or "").split())
+    return t if len(t) <= n else t[: n - 1].rsplit(" ", 1)[0] + "…"
+
+
+def _tidy(t: str) -> str:
+    t = re.sub(r"^(the|a|an)\s+", "", t.strip(), flags=re.I)
+    return t[:1].upper() + t[1:] if t else t
+
+
+def _pick_filings(items: list, now_utc: datetime) -> dict:
+    today = now_utc.astimezone(IST).date()
+    ann, cal, acts, seen = [], [], [], set()
+    for it in items:
+        ft, company = it.get("filing_type"), (it.get("company") or "").strip()
+        text = it.get("text") or ""
+        if not company:
+            continue
+        big = bool(ANALYST.companies(company, "india"))
+        if ft in ("announcement", "results"):
+            age = _age_h(it.get("published"), now_utc)
+            if age is not None and age > 30:
+                continue
+            m = _SUBJ_RE.search(text)
+            subject = (m.group(1) if m else ("Financial Results" if ft == "results" else "")).strip()
+            detail = _SUBJ_RE.sub("", text).strip()
+            if ft == "results":
+                detail = detail.replace("|", " · ")
+            if _ROUTINE_RE.search(subject) or _ROUTINE_RE.search(detail[:120]):
+                continue
+            w = max([wt for rx, wt in _SUBJECT_WEIGHT if rx.search(subject) or rx.search(detail[:160])] or [0])
+            if w == 0 and not big:
+                continue
+            key = (company.lower(), subject.lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            score = w + (40 if big else 0) + 10 * 0.5 ** ((age or 0) / 12)
+            ann.append((score, {"company": company, "subject": subject or "Announcement",
+                                "detail": _tidy(_clip(re.sub(rf"^{re.escape(company)}\s+has informed the Exchange (about|regarding)\s*", "", detail, flags=re.I), 220)),
+                                "url": it["url"], "published": _ist(it.get("published")), "largecap": big}))
+        elif ft == "board_meeting":
+            m = _MEET_RE.search(text)
+            d = _nse_date(m.group(1)) if m else None
+            if not d or not (today <= d <= today + timedelta(days=7)):
+                continue
+            purpose = _clip(_MEET_RE.sub("", text).strip(" |"), 140)
+            purpose = re.sub(rf"^{re.escape(company)}\s+has informed the Exchange about Board Meeting to be held on \S+ to consider\s*", "", purpose, flags=re.I)
+            key = (company.lower(), d)
+            if key in seen:
+                continue
+            seen.add(key)
+            results = bool(re.search(r"financial results?|results", purpose, re.I))
+            score = (40 if big else 0) + (20 if results else 0) - (d - today).days
+            cal.append((score, {"company": company, "date": d.isoformat(), "purpose": purpose or "Board meeting",
+                                "results": results, "url": it["url"], "largecap": big}))
+        elif ft == "corporate_action":
+            pm, rd, ex = _PURPOSE_RE.search(text), _RECORD_RE.search(text), _EXDATE_RE.search(it.get("raw_title") or "")
+            d = _nse_date(ex.group(1)) if ex else (_nse_date(rd.group(1)) if rd else None)
+            if not d or not (today <= d <= today + timedelta(days=7)):
+                continue
+            acts.append(((40 if big else 0) - (d - today).days,
+                         {"company": company, "ex_date": d.isoformat(),
+                          "purpose": _clip(pm.group(1).strip() if pm else text, 80), "largecap": big}))
+    top = lambda lst, n: [x for _, x in sorted(lst, key=lambda t: -t[0])[:n]]  # noqa: E731
+    cal_sorted = sorted(top(cal, 14), key=lambda x: (x["date"], not x["largecap"]))
+    return {"announcements": top(ann, 12), "calendar": cal_sorted, "actions": top(acts, 8)}
+
 # ---------------------------------------------------------------- public API
 
 def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[list, dict]:
@@ -564,6 +732,7 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
         trusted = None
     video_items = [it for it in raw_items if it.get("kind") == "video"]
     social_items = [it for it in raw_items if it.get("kind") == "social"]
+    filing_items = [it for it in raw_items if it.get("kind") == "filing"]
     news_items, untrusted = [], 0
     for it in raw_items:
         if it.get("kind", "news") != "news":
@@ -645,6 +814,8 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
                                    now_utc),
             "social": _pick_social(social_items, sid, low_value_patterns, now_utc),
         })
+        if sid == "india":
+            out_sections[-1]["filings"] = _pick_filings(filing_items, now_utc)
         stats_by_section[sid] = len(ordered)
         for s in ordered:
             stats_by_source[s["source"]] = stats_by_source.get(s["source"], 0) + 1

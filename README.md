@@ -5,7 +5,7 @@ A personal newspaper for the Indian markets. It **prints itself** in the cloud e
 | Section | What's in it |
 |---|---|
 | **Front page** | The lead story, the 20-second "Before the bell" read and a market snapshot |
-| **01 India** | The Editor's Briefing (Gemini takeaways, a "watch today" sheet and India in brief), then Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, FII/DII flows, and ranked stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
+| **01 India** | The Editor's Briefing (Gemini takeaways, a "watch today" sheet and India in brief), then Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, Nifty 50 breadth and top movers, **NSE filings** (results & board-meeting calendar, material disclosures, ex-dates), FII/DII flows, and ranked stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
 | **02 World** | An editor's note, a global index heat-map, US futures, FX, commodities, bond yields, and stories from WSJ, Bloomberg, FT, Reuters, CNBC, MarketWatch, The Economist, Nikkei Asia and BBC |
 | **03 AI & Tech** | An editor's note, tech bellwethers (incl. Indian IT), a trending-topics chart, AI videos on YouTube, Reddit/Bluesky chatter, and stories from TechCrunch, The Verge, MIT Tech Review, Ars, Wired, VentureBeat, OpenAI, Google, Bloomberg/WSJ/FT tech, ET Tech, Inc42 and Hacker News |
 
@@ -20,6 +20,12 @@ GitHub Actions (free)                     every hour, around the clock
         └─ template.html → site/index.html (one self-contained page) → GitHub Pages
 ```
 The code uses only the Python standard library, with no servers and no databases. It doesn't depend on any Claude subscription. Past editions are kept in `archive/` for 30 days and can be picked from the "Today" menu.
+
+## What gets ranked up (analyst lens, `analyst.json`)
+- **Pushed up:** earnings (Q results, margins, guidance), broker rating and target changes, deals and capital raises (M&A, stake sales, block deals, QIPs, buybacks), orders and capex, regulation and policy (SEBI, RBI, GST, tariffs), macro prints (CPI, IIP, GDP, PMI), rates and central banks, FII/DII flows, index events (MSCI, rebalancing), credit ratings, market-wide moves, and stories naming large-cap companies. Those companies also appear as tags.
+- **Pushed down:** SME IPO subscription and GMP chatter, small DRHP filings, "multibagger" and stock-tip listicles, live blogs and recaps, explainers and opinion, and gadget reviews in Tech.
+- **Dropped:** personal finance (FD rates, ITR, credit cards), lifestyle, sports, entertainment and astrology.
+- Edit `analyst.json` to change the weights or add companies.
 
 ## Social & video sources
 These appear in the AI & Tech section only.

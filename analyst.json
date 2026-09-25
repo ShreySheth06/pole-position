@@ -1,0 +1,1399 @@
+{
+  "_note": "Relevance model for an equity research analyst / market participant. Patterns are case-insensitive regexes matched against title + summary. process.py adds `weight` once per matching signal.",
+  "signals": [
+    {
+      "name": "Market-wide move",
+      "weight": 10,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "biggest (weekly|daily|single-day|monthly) (drop|fall|gain|rise|loss)",
+        "worst (week|day|month|session)",
+        "best (week|day|month|session) (since|in)",
+        "record (high|low|close)",
+        "all-time (high|low)",
+        "(nifty|sensex|bank nifty|s&p 500|nasdaq|dow|nikkei)\\b.{0,50}\\b(falls?|drops?|slumps?|tanks?|crash(es)?|plunges?|tumbles?|surges?|jumps?|soars?|rall(y|ies)|gains?|rises?|sheds?|climbs?)",
+        "(investors|market cap).{0,30}(lose|wiped|erod|poorer|richer)",
+        "rupee.{0,40}(record low|all-time low|lifetime low|weakens|slumps|falls|hits)",
+        "(crude|brent|oil).{0,30}(surges?|spikes?|jumps?|soars?|plunges?|slumps?|tops|crosses|above \\$)",
+        "circuit breaker",
+        "\\bvix\\b.{0,30}(jumps|spikes|surges)"
+      ]
+    },
+    {
+      "name": "Earnings",
+      "weight": 12,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "\\bq[1-4]\\b",
+        "\\bquarterly\\b",
+        "\\bresults?\\b",
+        "net profit",
+        "\\bpat\\b",
+        "\\bebitda\\b",
+        "\\bmargins?\\b",
+        "\\brevenue\\b",
+        "\\bearnings\\b",
+        "\\bguidance\\b",
+        "\\bbeats?\\b.*estimates",
+        "\\bmiss(es|ed)?\\b.*estimates",
+        "\\byoy\\b",
+        "\\bqoq\\b",
+        "year-on-year",
+        "same-store sales",
+        "\\bprofit (rises|jumps|falls|drops|surges|slumps|declines|grows)"
+      ]
+    },
+    {
+      "name": "Broker call",
+      "weight": 10,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "\\bupgrades?\\b",
+        "\\bdowngrades?\\b",
+        "target price",
+        "price target",
+        "\\bpt\\b to",
+        "initiates? coverage",
+        "\\boverweight\\b",
+        "\\bunderweight\\b",
+        "\\boutperform\\b",
+        "\\bunderperform\\b",
+        "buy rating",
+        "sell rating",
+        "\\bjefferies\\b",
+        "morgan stanley",
+        "goldman sachs",
+        "\\bclsa\\b",
+        "\\bnomura\\b",
+        "\\bmacquarie\\b",
+        "\\bbernstein\\b",
+        "\\bcitigroup\\b|\\bciti\\b",
+        "motilal oswal",
+        "kotak institutional",
+        "\\bubs\\b",
+        "\\bhsbc\\b.*(rating|target)",
+        "\\bjpmorgan\\b.*(rating|target|stake)"
+      ]
+    },
+    {
+      "name": "Deals & capital",
+      "weight": 9,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "\\bacquir(e|es|ed|ing|ition)\\b",
+        "\\bmerger\\b",
+        "\\bdemerger\\b",
+        "\\bstake (sale|buy|hike|cut)\\b",
+        "\\bbuys? .{0,30}stake\\b",
+        "\\bsells? .{0,30}stake\\b",
+        "block deal",
+        "bulk deal",
+        "\\bqip\\b",
+        "rights issue",
+        "\\bofs\\b",
+        "offer for sale",
+        "\\bbuyback\\b",
+        "open offer",
+        "delist",
+        "promoters? (pledge|sell|buy|stake)",
+        "\\bpledged?\\b",
+        "fund ?rais",
+        "\\braises? \\$?₹?[0-9]",
+        "\\bnclt\\b",
+        "insolvency",
+        "\\bipo\\b.*(₹|rs|crore|billion|\\$)[ ]?[0-9]|[0-9,]+ ?crore ipo"
+      ]
+    },
+    {
+      "name": "Orders & capex",
+      "weight": 7,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "\\border (win|book|inflow)s?\\b",
+        "\\bbags?\\b.*order",
+        "\\bwins?\\b.*(order|contract)",
+        "\\bcontract worth\\b",
+        "\\bcapex\\b",
+        "capacity (addition|expansion)",
+        "new plant",
+        "\\bguidance (raise|cut)"
+      ]
+    },
+    {
+      "name": "Regulation & policy",
+      "weight": 9,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "\\bsebi\\b",
+        "\\brbi\\b",
+        "\\bgst\\b",
+        "\\btariffs?\\b",
+        "\\bpli\\b",
+        "customs duty",
+        "windfall",
+        "excise duty",
+        "\\bban(s|ned)?\\b",
+        "\\bpenalty\\b",
+        "\\bcircular\\b",
+        "\\bcabinet (approves|nod)",
+        "\\bdgca\\b",
+        "\\bcci\\b",
+        "\\birdai\\b",
+        "\\bpfrda\\b",
+        "\\btrai\\b",
+        "\\bantitrust\\b",
+        "\\bsanctions?\\b",
+        "export (curb|ban|duty)",
+        "import duty",
+        "\\bmsp\\b",
+        "\\bbudget\\b",
+        "fiscal deficit"
+      ]
+    },
+    {
+      "name": "Macro data",
+      "weight": 9,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "\\bcpi\\b",
+        "\\bwpi\\b",
+        "\\biip\\b",
+        "\\bgdp\\b",
+        "\\bpmi\\b",
+        "\\binflation\\b",
+        "trade deficit",
+        "current account",
+        "forex reserves",
+        "core sector",
+        "credit growth",
+        "deposit growth",
+        "\\bpayrolls\\b",
+        "jobless claims",
+        "unemployment rate",
+        "\\bpce\\b",
+        "retail sales",
+        "industrial output",
+        "\\bmonsoon\\b"
+      ]
+    },
+    {
+      "name": "Rates & central banks",
+      "weight": 10,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "repo rate",
+        "rate (cut|hike|decision)",
+        "\\bmpc\\b",
+        "\\bfomc\\b",
+        "\\bfed\\b",
+        "federal reserve",
+        "\\bpowell\\b",
+        "\\becb\\b",
+        "bank of japan|\\bboj\\b",
+        "bank of england|\\bboe\\b",
+        "\\bpboc\\b",
+        "bond yields?",
+        "\\btreasur(y|ies)\\b",
+        "\\bg-?sec\\b",
+        "\\bliquidity\\b",
+        "\\bcrr\\b",
+        "\\bslr\\b"
+      ]
+    },
+    {
+      "name": "Flows & positioning",
+      "weight": 8,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "\\bfiis?\\b",
+        "\\bfpis?\\b",
+        "\\bdiis?\\b",
+        "foreign (investors|inflows|outflows|funds)",
+        "\\binflows?\\b",
+        "\\boutflows?\\b",
+        "\\bamfi\\b",
+        "\\bsip (inflows|flows)",
+        "mutual fund (inflows|flows)",
+        "\\bopen interest\\b",
+        "\\bf&o\\b",
+        "\\bderivatives?\\b",
+        "\\bexpiry\\b",
+        "short (covering|selling)"
+      ]
+    },
+    {
+      "name": "Index events",
+      "weight": 7,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "\\bmsci\\b",
+        "\\bftse\\b",
+        "rebalanc",
+        "index inclusion",
+        "(nifty|sensex) (inclusion|exclusion|reshuffle)",
+        "f&o ban",
+        "\\bmwpl\\b"
+      ]
+    },
+    {
+      "name": "Credit",
+      "weight": 7,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "\\bcrisil\\b",
+        "\\bicra\\b",
+        "\\bcare ratings\\b",
+        "\\bmoody'?s\\b",
+        "s&p global ratings|\\bs&p (upgrades|downgrades|affirms)",
+        "\\bfitch\\b",
+        "\\bdefaults?\\b",
+        "credit rating",
+        "\\bnpa\\b",
+        "asset quality"
+      ]
+    },
+    {
+      "name": "Markets & commodities",
+      "weight": 8,
+      "sections": [
+        "india",
+        "world"
+      ],
+      "patterns": [
+        "\\bnifty\\b",
+        "\\bsensex\\b",
+        "bank nifty",
+        "\\brupee\\b",
+        "\\bcrude\\b",
+        "\\bbrent\\b",
+        "\\bopec\\b",
+        "\\bgold\\b",
+        "\\bsilver\\b",
+        "\\bcopper\\b",
+        "\\bdollar index\\b|\\bdxy\\b",
+        "\\bs&p 500\\b",
+        "\\bnasdaq\\b",
+        "\\bdow\\b",
+        "wall street",
+        "\\bnikkei\\b",
+        "hang seng",
+        "\\bvix\\b",
+        "sell-?off",
+        "\\brally\\b",
+        "record (high|low)",
+        "biggest (weekly|daily|monthly) (drop|fall|gain|rise)"
+      ]
+    },
+    {
+      "name": "AI & tech industry",
+      "weight": 9,
+      "sections": [
+        "tech"
+      ],
+      "patterns": [
+        "\\bopenai\\b",
+        "\\banthropic\\b",
+        "\\bgoogle deepmind\\b|\\bdeepmind\\b",
+        "\\bgemini\\b",
+        "\\bgpt-?[0-9]",
+        "\\bclaude\\b",
+        "\\bllama\\b",
+        "\\bmistral\\b",
+        "\\bxai\\b",
+        "\\bnvidia\\b",
+        "\\btsmc\\b",
+        "\\bamd\\b",
+        "\\bbroadcom\\b",
+        "\\bsemiconductor",
+        "\\bchips?\\b",
+        "\\bgpus?\\b",
+        "data ?cent(er|re)s?",
+        "\\bhyperscaler",
+        "ai (capex|spending|infrastructure)",
+        "\\bvaluation\\b",
+        "\\bfunding round\\b|raises? \\$[0-9]",
+        "\\bfrontier model",
+        "\\bagi\\b",
+        "\\bmicrosoft\\b",
+        "\\balphabet\\b",
+        "\\bmeta\\b",
+        "\\bamazon\\b",
+        "\\bapple\\b",
+        "\\boracle\\b",
+        "\\bindian it\\b|\\binfosys\\b|\\btcs\\b|\\bwipro\\b|\\bhcltech\\b",
+        "\\bh-?1b\\b",
+        "export controls?"
+      ]
+    },
+    {
+      "name": "Stock move",
+      "weight": 6,
+      "sections": [
+        "india",
+        "world",
+        "tech"
+      ],
+      "patterns": [
+        "(shares?|stock|scrip)s?\\b.{0,25}\\b(jump|surge|soar|rall(y|ies)|rise|gain|climb|fall|drop|slump|tumble|plunge|sink|slide|decline|crash)(s|ed|es)?\\b",
+        "\\bm-?cap\\b",
+        "market capitali[sz]ation",
+        "\\b52-week (high|low)\\b"
+      ]
+    }
+  ],
+  "noise": [
+    {
+      "name": "Small IPO filings",
+      "weight": -12,
+      "sections": [
+        "india"
+      ],
+      "patterns": [
+        "files? (ipo|drhp|draft red herring|updated drhp) (papers|documents)?",
+        "\\bdrhp\\b",
+        "draft papers",
+        "ipo papers",
+        "price band",
+        "anchor investors",
+        "ipo opens",
+        "ipo to open",
+        "ipo closes",
+        "ipo review",
+        "apply or (not|avoid)"
+      ]
+    },
+    {
+      "name": "SME / IPO chatter",
+      "weight": -18,
+      "patterns": [
+        "\\bsme\\b",
+        "\\bgmp\\b",
+        "grey market premium",
+        "subscription status",
+        "subscribed [0-9.]+ ?times",
+        "ipo (day|allotment status)",
+        "allotment status",
+        "listing gains?",
+        "\\bipo\\b.*day [123]\\b"
+      ]
+    },
+    {
+      "name": "Hype",
+      "weight": -18,
+      "patterns": [
+        "multibagger",
+        "penny stocks?",
+        "\\bupper circuit\\b",
+        "\\blower circuit\\b",
+        "stocks? under ₹?rs?\\.? ?[0-9]+",
+        "\\bto buy (now|today|this week)\\b",
+        "stocks to buy",
+        "\\bbuy or sell\\b",
+        "should you (buy|sell|hold)",
+        "technical picks?",
+        "intraday picks?",
+        "trading ideas?"
+      ]
+    },
+    {
+      "name": "Live blogs & recaps",
+      "weight": -10,
+      "patterns": [
+        "\\blive\\b",
+        "live updates",
+        "highlights",
+        "closing bell",
+        "opening bell",
+        "market today",
+        "stock market today",
+        "share market today",
+        "sensex today",
+        "top gainers",
+        "top losers",
+        "stocks in focus today"
+      ]
+    },
+    {
+      "name": "Explainers & opinion",
+      "weight": -8,
+      "patterns": [
+        "\\bexplained\\b",
+        "\\bexplainer\\b",
+        "what is\\b",
+        "\\bhow to\\b",
+        "\\bopinion\\b",
+        "\\bview:",
+        "\\bcolumn\\b",
+        "\\bpodcast\\b",
+        "\\bquiz\\b",
+        "\\bguide\\b"
+      ]
+    },
+    {
+      "name": "Consumer tech",
+      "weight": -14,
+      "patterns": [
+        "\\breview\\b",
+        "hands-on",
+        "\\bdeals?\\b.*(off|discount|sale)",
+        "\\bbest (phones|laptops|tvs|headphones)",
+        "\\bwallpaper",
+        "\\bgaming\\b",
+        "\\bgame\\b",
+        "\\btrailer\\b",
+        "\\bnetflix\\b.*(show|series|season)",
+        "how to (use|set up|turn)",
+        "tips and tricks"
+      ],
+      "sections": [
+        "tech"
+      ]
+    }
+  ],
+  "drop": [
+    "personal finance",
+    "credit card",
+    "fixed deposit",
+    "fd rates",
+    "home loan",
+    "car loan",
+    "income tax return",
+    "itr filing",
+    "itr-",
+    "\\bppf\\b",
+    "\\bepfo?\\b",
+    "\\bnps\\b.*(subscriber|account)",
+    "pension scheme",
+    "gold (rate|price) today",
+    "silver (rate|price) today",
+    "petrol,? diesel price",
+    "fuel prices today",
+    "bank holiday",
+    "lpg cylinder",
+    "rainfall alert",
+    "horoscope",
+    "astrolog",
+    "numerolog",
+    "zodiac",
+    "vastu",
+    "recipe",
+    "bollywood",
+    "box office",
+    "cricket",
+    "\\bipl\\b",
+    "football",
+    "olympic",
+    "celebrity",
+    "love life",
+    "viral video",
+    "murder",
+    "kidnap",
+    "rape",
+    "accident kills",
+    "dating",
+    "wellness",
+    "diet",
+    "yoga",
+    "skincare"
+  ],
+  "universe": [
+    {
+      "name": "Reliance",
+      "aliases": [
+        "reliance industries",
+        "reliance ind",
+        "\\bril\\b",
+        "reliance jio",
+        "jio platforms",
+        "reliance retail",
+        "mukesh ambani"
+      ]
+    },
+    {
+      "name": "HDFC Bank",
+      "aliases": [
+        "hdfc bank"
+      ]
+    },
+    {
+      "name": "ICICI Bank",
+      "aliases": [
+        "icici bank"
+      ]
+    },
+    {
+      "name": "Infosys",
+      "aliases": [
+        "infosys"
+      ]
+    },
+    {
+      "name": "TCS",
+      "aliases": [
+        "tata consultancy"
+      ],
+      "acronyms": [
+        "TCS"
+      ]
+    },
+    {
+      "name": "Bharti Airtel",
+      "aliases": [
+        "bharti airtel",
+        "\\bairtel\\b"
+      ]
+    },
+    {
+      "name": "SBI",
+      "aliases": [
+        "state bank of india"
+      ],
+      "acronyms": [
+        "SBI"
+      ]
+    },
+    {
+      "name": "ITC",
+      "aliases": [
+        "itc hotels"
+      ],
+      "acronyms": [
+        "ITC"
+      ]
+    },
+    {
+      "name": "L&T",
+      "aliases": [
+        "larsen & toubro",
+        "larsen and toubro",
+        "l&t"
+      ]
+    },
+    {
+      "name": "Kotak Bank",
+      "aliases": [
+        "kotak mahindra bank",
+        "kotak bank"
+      ]
+    },
+    {
+      "name": "Axis Bank",
+      "aliases": [
+        "axis bank"
+      ]
+    },
+    {
+      "name": "HUL",
+      "aliases": [
+        "hindustan unilever"
+      ],
+      "acronyms": [
+        "HUL"
+      ]
+    },
+    {
+      "name": "Bajaj Finance",
+      "aliases": [
+        "bajaj finance"
+      ]
+    },
+    {
+      "name": "Bajaj Finserv",
+      "aliases": [
+        "bajaj finserv"
+      ]
+    },
+    {
+      "name": "Bajaj Auto",
+      "aliases": [
+        "bajaj auto"
+      ]
+    },
+    {
+      "name": "M&M",
+      "aliases": [
+        "mahindra & mahindra",
+        "mahindra and mahindra",
+        "m&m"
+      ]
+    },
+    {
+      "name": "Maruti Suzuki",
+      "aliases": [
+        "maruti"
+      ]
+    },
+    {
+      "name": "Sun Pharma",
+      "aliases": [
+        "sun pharma"
+      ]
+    },
+    {
+      "name": "HCLTech",
+      "aliases": [
+        "hcltech",
+        "hcl tech"
+      ]
+    },
+    {
+      "name": "NTPC",
+      "aliases": [
+        "\\bntpc\\b"
+      ]
+    },
+    {
+      "name": "Tata Motors",
+      "aliases": [
+        "tata motors",
+        "jaguar land rover",
+        "\\bjlr\\b"
+      ]
+    },
+    {
+      "name": "Titan",
+      "aliases": [
+        "titan company",
+        "\\btitan\\b"
+      ]
+    },
+    {
+      "name": "UltraTech",
+      "aliases": [
+        "ultratech"
+      ]
+    },
+    {
+      "name": "Asian Paints",
+      "aliases": [
+        "asian paints"
+      ]
+    },
+    {
+      "name": "ONGC",
+      "aliases": [
+        "\\bongc\\b",
+        "oil and natural gas"
+      ]
+    },
+    {
+      "name": "Power Grid",
+      "aliases": [
+        "power grid"
+      ]
+    },
+    {
+      "name": "Adani",
+      "aliases": [
+        "\\badani\\b"
+      ]
+    },
+    {
+      "name": "Coal India",
+      "aliases": [
+        "coal india"
+      ]
+    },
+    {
+      "name": "Wipro",
+      "aliases": [
+        "\\bwipro\\b"
+      ]
+    },
+    {
+      "name": "Nestle India",
+      "aliases": [
+        "nestle india",
+        "\\bnestle\\b"
+      ]
+    },
+    {
+      "name": "JSW Steel",
+      "aliases": [
+        "jsw steel",
+        "\\bjsw\\b"
+      ]
+    },
+    {
+      "name": "Tata Steel",
+      "aliases": [
+        "tata steel"
+      ]
+    },
+    {
+      "name": "Hindalco",
+      "aliases": [
+        "hindalco",
+        "\\bnovelis\\b"
+      ]
+    },
+    {
+      "name": "Grasim",
+      "aliases": [
+        "grasim"
+      ]
+    },
+    {
+      "name": "Tech Mahindra",
+      "aliases": [
+        "tech mahindra"
+      ]
+    },
+    {
+      "name": "Cipla",
+      "aliases": [
+        "\\bcipla\\b"
+      ]
+    },
+    {
+      "name": "Dr Reddy's",
+      "aliases": [
+        "dr\\.? reddy"
+      ]
+    },
+    {
+      "name": "Eicher Motors",
+      "aliases": [
+        "eicher",
+        "royal enfield"
+      ]
+    },
+    {
+      "name": "Hero MotoCorp",
+      "aliases": [
+        "hero motocorp"
+      ]
+    },
+    {
+      "name": "Britannia",
+      "aliases": [
+        "britannia"
+      ]
+    },
+    {
+      "name": "Apollo Hospitals",
+      "aliases": [
+        "apollo hospitals"
+      ]
+    },
+    {
+      "name": "SBI Life",
+      "aliases": [
+        "sbi life"
+      ]
+    },
+    {
+      "name": "HDFC Life",
+      "aliases": [
+        "hdfc life"
+      ]
+    },
+    {
+      "name": "IndusInd Bank",
+      "aliases": [
+        "indusind"
+      ]
+    },
+    {
+      "name": "Shriram Finance",
+      "aliases": [
+        "shriram finance"
+      ]
+    },
+    {
+      "name": "BEL",
+      "aliases": [
+        "bharat electronics"
+      ],
+      "acronyms": [
+        "BEL"
+      ]
+    },
+    {
+      "name": "Trent",
+      "aliases": [
+        "\\btrent\\b",
+        "\\bzudio\\b"
+      ]
+    },
+    {
+      "name": "Eternal (Zomato)",
+      "aliases": [
+        "\\bzomato\\b",
+        "\\beternal\\b",
+        "blinkit"
+      ]
+    },
+    {
+      "name": "Jio Financial",
+      "aliases": [
+        "jio financial"
+      ]
+    },
+    {
+      "name": "HAL",
+      "aliases": [
+        "hindustan aeronautics"
+      ],
+      "acronyms": [
+        "HAL"
+      ]
+    },
+    {
+      "name": "LIC",
+      "aliases": [
+        "life insurance corporation"
+      ],
+      "acronyms": [
+        "LIC"
+      ]
+    },
+    {
+      "name": "DMart",
+      "aliases": [
+        "avenue supermarts",
+        "\\bdmart\\b"
+      ]
+    },
+    {
+      "name": "Vedanta",
+      "aliases": [
+        "vedanta",
+        "hindustan zinc"
+      ]
+    },
+    {
+      "name": "Indian Oil",
+      "aliases": [
+        "indian oil"
+      ],
+      "acronyms": [
+        "IOC",
+        "IOCL"
+      ]
+    },
+    {
+      "name": "BPCL",
+      "aliases": [
+        "bharat petroleum",
+        "\\bbpcl\\b"
+      ]
+    },
+    {
+      "name": "HPCL",
+      "aliases": [
+        "hindustan petroleum",
+        "\\bhpcl\\b"
+      ]
+    },
+    {
+      "name": "GAIL",
+      "aliases": [
+        "\\bgail\\b"
+      ]
+    },
+    {
+      "name": "DLF",
+      "aliases": [
+        "\\bdlf\\b"
+      ]
+    },
+    {
+      "name": "Godrej",
+      "aliases": [
+        "godrej"
+      ]
+    },
+    {
+      "name": "Pidilite",
+      "aliases": [
+        "pidilite"
+      ]
+    },
+    {
+      "name": "Siemens",
+      "aliases": [
+        "siemens"
+      ]
+    },
+    {
+      "name": "ABB India",
+      "aliases": [
+        "abb india"
+      ],
+      "acronyms": [
+        "ABB"
+      ]
+    },
+    {
+      "name": "TVS Motor",
+      "aliases": [
+        "tvs motor"
+      ]
+    },
+    {
+      "name": "Tata Power",
+      "aliases": [
+        "tata power"
+      ]
+    },
+    {
+      "name": "Tata Consumer",
+      "aliases": [
+        "tata consumer"
+      ]
+    },
+    {
+      "name": "Tata Group",
+      "aliases": [
+        "tata sons",
+        "tata group",
+        "\\btata\\b"
+      ]
+    },
+    {
+      "name": "Varun Beverages",
+      "aliases": [
+        "varun beverages"
+      ]
+    },
+    {
+      "name": "Zydus",
+      "aliases": [
+        "\\bzydus\\b"
+      ]
+    },
+    {
+      "name": "Lupin",
+      "aliases": [
+        "\\blupin\\b"
+      ]
+    },
+    {
+      "name": "Bank of Baroda",
+      "aliases": [
+        "bank of baroda"
+      ]
+    },
+    {
+      "name": "PNB",
+      "aliases": [
+        "punjab national bank"
+      ],
+      "acronyms": [
+        "PNB"
+      ]
+    },
+    {
+      "name": "Canara Bank",
+      "aliases": [
+        "canara bank"
+      ]
+    },
+    {
+      "name": "IndiGo",
+      "aliases": [
+        "interglobe",
+        "\\bindigo\\b"
+      ]
+    },
+    {
+      "name": "Info Edge",
+      "aliases": [
+        "info edge",
+        "naukri"
+      ]
+    },
+    {
+      "name": "Havells",
+      "aliases": [
+        "havells"
+      ]
+    },
+    {
+      "name": "Dabur",
+      "aliases": [
+        "\\bdabur\\b"
+      ]
+    },
+    {
+      "name": "Marico",
+      "aliases": [
+        "\\bmarico\\b"
+      ]
+    },
+    {
+      "name": "United Spirits",
+      "aliases": [
+        "united spirits"
+      ]
+    },
+    {
+      "name": "Paytm",
+      "aliases": [
+        "\\bpaytm\\b",
+        "one 97"
+      ]
+    },
+    {
+      "name": "Swiggy",
+      "aliases": [
+        "\\bswiggy\\b"
+      ]
+    },
+    {
+      "name": "Nykaa",
+      "aliases": [
+        "\\bnykaa\\b"
+      ]
+    },
+    {
+      "name": "Hyundai India",
+      "aliases": [
+        "hyundai motor india"
+      ]
+    },
+    {
+      "name": "LTIMindtree",
+      "aliases": [
+        "ltimindtree"
+      ]
+    },
+    {
+      "name": "Persistent",
+      "aliases": [
+        "persistent systems"
+      ]
+    },
+    {
+      "name": "Mphasis",
+      "aliases": [
+        "mphasis"
+      ]
+    },
+    {
+      "name": "Coforge",
+      "aliases": [
+        "coforge"
+      ]
+    },
+    {
+      "name": "Dixon",
+      "aliases": [
+        "dixon tech"
+      ]
+    },
+    {
+      "name": "Polycab",
+      "aliases": [
+        "polycab"
+      ]
+    },
+    {
+      "name": "Bharat Forge",
+      "aliases": [
+        "bharat forge"
+      ]
+    },
+    {
+      "name": "BHEL",
+      "aliases": [
+        "\\bbhel\\b",
+        "bharat heavy"
+      ]
+    },
+    {
+      "name": "REC / PFC",
+      "aliases": [
+        "power finance corp",
+        "rec ltd",
+        "rec limited"
+      ],
+      "acronyms": [
+        "PFC"
+      ]
+    },
+    {
+      "name": "IRFC",
+      "aliases": [
+        "\\birfc\\b"
+      ]
+    },
+    {
+      "name": "Mazagon Dock",
+      "aliases": [
+        "mazagon dock"
+      ]
+    },
+    {
+      "name": "Cochin Shipyard",
+      "aliases": [
+        "cochin shipyard"
+      ]
+    },
+    {
+      "name": "Suzlon",
+      "aliases": [
+        "suzlon"
+      ]
+    },
+    {
+      "name": "Yes Bank",
+      "aliases": [
+        "yes bank"
+      ]
+    },
+    {
+      "name": "IDFC First",
+      "aliases": [
+        "idfc first"
+      ]
+    },
+    {
+      "name": "Bandhan Bank",
+      "aliases": [
+        "bandhan bank"
+      ]
+    },
+    {
+      "name": "AU SFB",
+      "aliases": [
+        "au small finance"
+      ]
+    },
+    {
+      "name": "Cholamandalam",
+      "aliases": [
+        "cholamandalam"
+      ]
+    },
+    {
+      "name": "Max Healthcare",
+      "aliases": [
+        "max healthcare"
+      ]
+    },
+    {
+      "name": "Ola Electric",
+      "aliases": [
+        "ola electric"
+      ]
+    },
+    {
+      "name": "Waaree",
+      "aliases": [
+        "waaree"
+      ]
+    },
+    {
+      "name": "Ambuja/ACC",
+      "aliases": [
+        "ambuja cement",
+        "\\bacc\\b"
+      ]
+    },
+    {
+      "name": "Shree Cement",
+      "aliases": [
+        "shree cement"
+      ]
+    },
+    {
+      "name": "Hindustan Zinc",
+      "aliases": [
+        "hindustan zinc"
+      ]
+    },
+    {
+      "name": "Motherson",
+      "aliases": [
+        "motherson"
+      ]
+    },
+    {
+      "name": "Torrent Pharma",
+      "aliases": [
+        "torrent pharma"
+      ]
+    },
+    {
+      "name": "Divi's",
+      "aliases": [
+        "divi'?s lab"
+      ]
+    },
+    {
+      "name": "ICICI Pru / Lombard",
+      "aliases": [
+        "icici prudential",
+        "icici lombard"
+      ]
+    },
+    {
+      "name": "HDFC AMC",
+      "aliases": [
+        "hdfc amc",
+        "hdfc asset"
+      ]
+    },
+    {
+      "name": "NSE / BSE",
+      "aliases": [
+        "\\bbse ltd\\b",
+        "bse shares",
+        "nse ipo"
+      ]
+    }
+  ],
+  "global_universe": [
+    {
+      "name": "Nvidia",
+      "aliases": [
+        "\\bnvidia\\b"
+      ]
+    },
+    {
+      "name": "Microsoft",
+      "aliases": [
+        "\\bmicrosoft\\b"
+      ]
+    },
+    {
+      "name": "Apple",
+      "aliases": [
+        "\\bapple\\b"
+      ]
+    },
+    {
+      "name": "Alphabet",
+      "aliases": [
+        "\\balphabet\\b",
+        "\\bgoogle\\b"
+      ]
+    },
+    {
+      "name": "Amazon",
+      "aliases": [
+        "\\bamazon\\b",
+        "\\baws\\b"
+      ]
+    },
+    {
+      "name": "Meta",
+      "aliases": [
+        "\\bmeta platforms\\b",
+        "\\bmeta\\b"
+      ]
+    },
+    {
+      "name": "Tesla",
+      "aliases": [
+        "\\btesla\\b"
+      ]
+    },
+    {
+      "name": "TSMC",
+      "aliases": [
+        "\\btsmc\\b"
+      ]
+    },
+    {
+      "name": "Broadcom",
+      "aliases": [
+        "\\bbroadcom\\b"
+      ]
+    },
+    {
+      "name": "Oracle",
+      "aliases": [
+        "\\boracle\\b"
+      ]
+    },
+    {
+      "name": "OpenAI",
+      "aliases": [
+        "\\bopenai\\b"
+      ]
+    },
+    {
+      "name": "Anthropic",
+      "aliases": [
+        "\\banthropic\\b"
+      ]
+    },
+    {
+      "name": "AMD",
+      "aliases": [
+        "\\bamd\\b"
+      ]
+    },
+    {
+      "name": "Intel",
+      "aliases": [
+        "\\bintel\\b"
+      ]
+    },
+    {
+      "name": "Samsung",
+      "aliases": [
+        "\\bsamsung\\b"
+      ]
+    },
+    {
+      "name": "JPMorgan",
+      "aliases": [
+        "\\bjpmorgan\\b"
+      ]
+    },
+    {
+      "name": "Berkshire",
+      "aliases": [
+        "\\bberkshire\\b"
+      ]
+    },
+    {
+      "name": "Saudi Aramco",
+      "aliases": [
+        "\\baramco\\b"
+      ]
+    }
+  ]
+}

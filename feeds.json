@@ -1024,6 +1024,54 @@
       "enabled": true,
       "url": "https://www.reddit.com/r/MachineLearning+LocalLLaMA+OpenAI+singularity+artificial/top/.rss?t=day&limit=30",
       "note": "one combined request per section: Reddit rate-limits unauthenticated bursts"
+    },
+    {
+      "id": "nse_announcements",
+      "kind": "filing",
+      "filing_type": "announcement",
+      "source_id": "nse",
+      "source": "NSE filings",
+      "section": "india",
+      "subsection": null,
+      "url": "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml",
+      "tier": 1,
+      "enabled": true
+    },
+    {
+      "id": "nse_board_meetings",
+      "kind": "filing",
+      "filing_type": "board_meeting",
+      "source_id": "nse",
+      "source": "NSE filings",
+      "section": "india",
+      "subsection": null,
+      "url": "https://nsearchives.nseindia.com/content/RSS/Board_Meetings.xml",
+      "tier": 1,
+      "enabled": true
+    },
+    {
+      "id": "nse_corporate_actions",
+      "kind": "filing",
+      "filing_type": "corporate_action",
+      "source_id": "nse",
+      "source": "NSE filings",
+      "section": "india",
+      "subsection": null,
+      "url": "https://nsearchives.nseindia.com/content/RSS/Corporate_action.xml",
+      "tier": 1,
+      "enabled": true
+    },
+    {
+      "id": "nse_financial_results",
+      "kind": "filing",
+      "filing_type": "results",
+      "source_id": "nse",
+      "source": "NSE filings",
+      "section": "india",
+      "subsection": null,
+      "url": "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
+      "tier": 1,
+      "enabled": true
     }
   ]
 }

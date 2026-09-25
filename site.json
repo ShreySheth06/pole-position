@@ -387,7 +387,6 @@
       "recession",
       "earnings",
       "results",
-      "ipo",
       "nifty",
       "sensex",
       "rupee",
@@ -434,7 +433,8 @@
       "regulation",
       "antitrust",
       "model",
-      "launch"
+      "launch",
+      "ipo"
     ]
   },
   "low_value_patterns": [

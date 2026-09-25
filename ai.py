@@ -131,7 +131,13 @@ SYSTEM_PROMPT = (
     "input below; NEVER invent levels, dates, events or quotes. Refer to time correctly relative to the "
     "given IST date (\"overnight\" for US markets that closed after Indian hours, \"yesterday\" for the "
     "prior Indian session). Highlight what could move the Nifty, sectors or specific stocks at today's "
-    "open. For technology, focus on AI developments with market relevance. IMPORTANT: every figure you "
+    "open. Write for a professional equity research analyst: name the specific companies, sectors and "
+    "instruments affected and the likely direction; prefer large caps, market-wide drivers (flows, rates, "
+    "crude, rupee, global cues), earnings, broker rating changes, deals, orders and policy over small-cap or "
+    "SME/IPO chatter. The watchlist must include results and board meetings listed in the EXCHANGE CALENDAR "
+    "for today/tomorrow (large caps first) and any data releases or policy events in the input. Each "
+    "why_it_matters should state the read-through for stocks/sectors (e.g. 'positive for OMCs, negative for "
+    "paints'). For technology, focus on AI developments with market relevance. IMPORTANT: every figure you "
     "write is machine-checked against the input; any sentence or item containing a number that does not "
     "appear in the input is deleted, so copy figures exactly and do not compute new ones. "
     "Respond with STRICT JSON only "
@@ -193,6 +199,13 @@ def _market_snapshot(markets: dict | None) -> str:
         pct_s = f"{pct:+.2f}%" if pct is not None else "n/a"
         bps = f" ({it['change_bps']:+.1f} bps)" if it.get("unit") == "%" and it.get("change_bps") is not None else ""
         lines.append(f"{label}: {it['value']} {pct_s}{bps}")
+    mv = markets.get("movers") if isinstance(markets, dict) else None
+    if mv:
+        lines.append(f"{mv.get('label')} breadth ({mv.get('as_of')}): {mv.get('advances')} up / {mv.get('declines')} down")
+        if mv.get("gainers"):
+            lines.append("Top gainers: " + ", ".join(f"{g['name']} {g['change_pct']:+.2f}%" for g in mv["gainers"]))
+        if mv.get("losers"):
+            lines.append("Top losers: " + ", ".join(f"{g['name']} {g['change_pct']:+.2f}%" for g in mv["losers"]))
     fl = markets.get("flows") if isinstance(markets, dict) else None
     if fl and fl.get("fii") and fl.get("dii"):
         lines.append(f"Institutional flows {fl.get('date')} ({fl.get('unit', 'Rs crore')}): "
@@ -205,6 +218,19 @@ def _build_user_prompt(sections: list, markets: dict | None, site_cfg: dict, now
              "MARKET SNAPSHOT (values as of last close/session):", _market_snapshot(markets)]
     for section in sections or []:
         parts += ["", f"SECTION {section.get('id')} ({section.get('title')}):", _digest_section(section, n, now_utc)]
+    fil = next((sec.get("filings") for sec in sections or [] if sec.get("id") == "india"), None) or {}
+    cal = fil.get("calendar") or []
+    if cal:
+        parts += ["", "EXCHANGE CALENDAR (NSE board meetings, next 7 days):"]
+        parts += [f"- {c['date']} · {c['company']} · {c['purpose']}" for c in cal[:12]]
+    anns = [x for x in (fil.get("announcements") or []) if x.get("largecap")][:8]
+    if anns:
+        parts += ["", "EXCHANGE FILINGS (last 30h, large caps):"]
+        parts += [f"- {x['company']} · {x['subject']} · {x['detail']}" for x in anns]
+    acts = fil.get("actions") or []
+    if acts:
+        parts += ["", "CORPORATE ACTIONS (ex-dates, next 7 days):"]
+        parts += [f"- {x['ex_date']} · {x['company']} · {x['purpose']}" for x in acts[:6]]
     k = (site_cfg.get("ai", {}) if isinstance(site_cfg, dict) else {}).get("enrich_top_per_section", 10)
     ids = [s.get("id") for sec in sections or [] for s in (sec.get("stories") or [])[:k] if s.get("id")]
     if ids:

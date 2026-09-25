@@ -213,6 +213,41 @@ def _sanity(item: dict, group_id: str, today) -> dict:
     return item
 
 
+def _movers(cfg: dict | None, today) -> dict | None:
+    """Large-cap breadth + top gainers/losers from the latest common session. Stale prints skipped."""
+    syms = (cfg or {}).get("symbols") or []
+    if not syms:
+        return None
+    rows = []
+    with ThreadPoolExecutor(max_workers=4) as ex:  # gentle on Yahoo: runs after the main board
+        futs = {ex.submit(_fetch_symbol, s["symbol"], None): s for s in syms}
+        for fut in futs:
+            s = futs[fut]
+            try:
+                raw = fut.result()
+                item = _format_item({"symbol": s["symbol"], "name": s["short"], "short": s["short"],
+                                     "decimals": 2, "currency": "INR"}, raw) if raw else None
+            except Exception:  # noqa: BLE001
+                item = None
+            if item and item.get("change_pct") is not None and abs(item["change_pct"]) <= 25:
+                rows.append(item)
+    if len(rows) < 10:
+        return None
+    latest = max(r["as_of"] for r in rows)
+    if (today - datetime.fromisoformat(latest).date()).days > 4:
+        return None
+    rows = [r for r in rows if r["as_of"] == latest]
+    rows.sort(key=lambda r: r["change_pct"])
+    slim = lambda r: {"symbol": r["symbol"], "name": r["short"], "value": r["value"],  # noqa: E731
+                      "change_pct": r["change_pct"], "change": r["change"]}
+    return {"label": cfg.get("label", "Nifty 50 heavyweights"), "as_of": latest, "count": len(rows),
+            "advances": sum(1 for r in rows if r["change_pct"] > 0),
+            "declines": sum(1 for r in rows if r["change_pct"] < 0),
+            "unchanged": sum(1 for r in rows if r["change_pct"] == 0),
+            "gainers": [slim(r) for r in reversed(rows[-5:]) if r["change_pct"] > 0],
+            "losers": [slim(r) for r in rows[:5] if r["change_pct"] < 0]}
+
+
 def fetch_markets(markets_cfg: dict, now_utc: datetime) -> dict | None:
     """Fetch each symbol once, format per group occurrence. Drops failed symbols and empty
     groups; returns None if everything failed. Never raises."""
@@ -259,7 +294,14 @@ def fetch_markets(markets_cfg: dict, now_utc: datetime) -> dict | None:
         if not groups_out:
             return None
         as_of = now_utc.astimezone(IST).isoformat(timespec="seconds")
-        return {"as_of": as_of, "groups": groups_out}
+        out = {"as_of": as_of, "groups": groups_out}
+        try:
+            mv = _movers((markets_cfg or {}).get("movers"), now_utc.astimezone(IST).date())
+            if mv:
+                out["movers"] = mv
+        except Exception as e:  # noqa: BLE001
+            log(f"movers failed: {e}")
+        return out
     except Exception as e:  # noqa: BLE001 - fetch_markets must never raise
         log(f"fetch_markets crashed: {e}")
         return None

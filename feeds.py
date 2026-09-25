@@ -444,6 +444,13 @@ def _parse_date(raw: str | None, default_tz) -> datetime | None:
                     dt = datetime.fromisoformat(base + suffix)
                 except ValueError:
                     dt = None
+    if dt is None:  # NSE archive feeds: "25-Sep-2026 22:51:23" (IST, no zone)
+        for fmt in ("%d-%b-%Y %H:%M:%S", "%d-%b-%Y %H:%M", "%d-%b-%Y"):
+            try:
+                dt = datetime.strptime(raw, fmt)
+                break
+            except ValueError:
+                continue
     if dt is None:
         return None
     if dt.tzinfo is None:
@@ -549,6 +556,12 @@ def _build_item(fields: dict, feed: dict, default_tz, now_utc: datetime) -> dict
         item.update(video_id=vid, channel=feed.get("source"), views=ex.get("views"),
                     thumbnail=f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
                     url=f"https://www.youtube.com/watch?v={vid}")
+    elif kind == "filing":
+        # NSE archive RSS: title = company, description = "<detail> |SUBJECT: <type>" or
+        # "<purpose> |Meeting Date: 30-Sep-2026" or "SERIES:EQ |PURPOSE:DIVIDEND ... |RECORD DATE:..."
+        item.update(filing_type=feed.get("filing_type", "announcement"),
+                    company=re.sub(r"\s+-\s+Ex-Date:.*$", "", title).strip(),
+                    text=summary, raw_title=title)
     elif kind == "social":
         ex = fields.get("extras") or {}
         text = _REDDIT_TAIL_RE.sub("", summary or "").strip()
