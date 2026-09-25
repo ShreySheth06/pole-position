@@ -712,13 +712,15 @@ def _pick_filings(items: list, now_utc: datetime) -> dict:
                 continue
             seen.add(key)
             results = bool(re.search(r"financial results?|results", purpose, re.I))
+            if not (big or results):
+                continue  # small-company fund-raising / rescheduling notices are noise for an analyst
             score = (40 if big else 0) + (20 if results else 0) - (d - today).days
             cal.append((score, {"company": company, "date": d.isoformat(), "purpose": purpose or "Board meeting",
                                 "results": results, "url": it["url"], "largecap": big}))
         elif ft == "corporate_action":
             pm, rd, ex = _PURPOSE_RE.search(text), _RECORD_RE.search(text), _EXDATE_RE.search(it.get("raw_title") or "")
             d = _nse_date(ex.group(1)) if ex else (_nse_date(rd.group(1)) if rd else None)
-            if not d or not (today <= d <= today + timedelta(days=7)):
+            if not d or not (today <= d <= today + timedelta(days=7)) or not big:
                 continue
             acts.append(((40 if big else 0) - (d - today).days,
                          {"company": company, "ex_date": d.isoformat(),

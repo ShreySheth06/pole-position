@@ -1281,6 +1281,667 @@
         "bse shares",
         "nse ipo"
       ]
+    },
+    {
+      "name": "SAIL",
+      "aliases": [
+        "steel authority",
+        "\\bsail\\b"
+      ]
+    },
+    {
+      "name": "NMDC",
+      "aliases": [
+        "\\bnmdc\\b"
+      ]
+    },
+    {
+      "name": "Union Bank",
+      "aliases": [
+        "union bank of india"
+      ]
+    },
+    {
+      "name": "Bank of India",
+      "aliases": [
+        "(?<!state )bank of india\\b"
+      ]
+    },
+    {
+      "name": "Indian Bank",
+      "aliases": [
+        "indian bank\\b"
+      ]
+    },
+    {
+      "name": "Federal Bank",
+      "aliases": [
+        "federal bank"
+      ]
+    },
+    {
+      "name": "IRCTC",
+      "aliases": [
+        "\\birctc\\b"
+      ]
+    },
+    {
+      "name": "Ashok Leyland",
+      "aliases": [
+        "ashok leyland"
+      ]
+    },
+    {
+      "name": "Indus Towers",
+      "aliases": [
+        "indus towers"
+      ]
+    },
+    {
+      "name": "Page Industries",
+      "aliases": [
+        "page industries"
+      ]
+    },
+    {
+      "name": "MRF",
+      "aliases": [
+        "\\bmrf\\b"
+      ]
+    },
+    {
+      "name": "Voltas",
+      "aliases": [
+        "\\bvoltas\\b"
+      ]
+    },
+    {
+      "name": "Muthoot Finance",
+      "aliases": [
+        "muthoot"
+      ]
+    },
+    {
+      "name": "Bajaj Holdings",
+      "aliases": [
+        "bajaj holdings"
+      ]
+    },
+    {
+      "name": "Godrej Properties",
+      "aliases": [
+        "godrej properties"
+      ]
+    },
+    {
+      "name": "Oberoi Realty",
+      "aliases": [
+        "oberoi realty"
+      ]
+    },
+    {
+      "name": "Prestige Estates",
+      "aliases": [
+        "prestige estates"
+      ]
+    },
+    {
+      "name": "Lodha",
+      "aliases": [
+        "\\blodha\\b",
+        "macrotech developers"
+      ]
+    },
+    {
+      "name": "Solar Industries",
+      "aliases": [
+        "solar industries"
+      ]
+    },
+    {
+      "name": "Torrent Power",
+      "aliases": [
+        "torrent power"
+      ]
+    },
+    {
+      "name": "JSW Energy",
+      "aliases": [
+        "jsw energy"
+      ]
+    },
+    {
+      "name": "NHPC",
+      "aliases": [
+        "\\bnhpc\\b"
+      ]
+    },
+    {
+      "name": "SJVN",
+      "aliases": [
+        "\\bsjvn\\b"
+      ]
+    },
+    {
+      "name": "Oil India",
+      "aliases": [
+        "oil india"
+      ]
+    },
+    {
+      "name": "Petronet LNG",
+      "aliases": [
+        "petronet"
+      ]
+    },
+    {
+      "name": "Indian Hotels",
+      "aliases": [
+        "indian hotels",
+        "\\btaj hotels\\b"
+      ]
+    },
+    {
+      "name": "Tube Investments",
+      "aliases": [
+        "tube investments"
+      ]
+    },
+    {
+      "name": "Balkrishna Industries",
+      "aliases": [
+        "balkrishna"
+      ]
+    },
+    {
+      "name": "Concor",
+      "aliases": [
+        "container corporation",
+        "\\bconcor\\b"
+      ]
+    },
+    {
+      "name": "L&T Finance",
+      "aliases": [
+        "l&t finance"
+      ]
+    },
+    {
+      "name": "Mankind Pharma",
+      "aliases": [
+        "mankind pharma"
+      ]
+    },
+    {
+      "name": "Alkem",
+      "aliases": [
+        "\\balkem\\b"
+      ]
+    },
+    {
+      "name": "Aurobindo Pharma",
+      "aliases": [
+        "aurobindo"
+      ]
+    },
+    {
+      "name": "Biocon",
+      "aliases": [
+        "\\bbiocon\\b"
+      ]
+    },
+    {
+      "name": "Glenmark",
+      "aliases": [
+        "glenmark"
+      ]
+    },
+    {
+      "name": "Ipca Labs",
+      "aliases": [
+        "ipca lab"
+      ]
+    },
+    {
+      "name": "Laurus Labs",
+      "aliases": [
+        "laurus"
+      ]
+    },
+    {
+      "name": "Tata Communications",
+      "aliases": [
+        "tata communications"
+      ]
+    },
+    {
+      "name": "Tata Elxsi",
+      "aliases": [
+        "tata elxsi"
+      ]
+    },
+    {
+      "name": "KPIT",
+      "aliases": [
+        "\\bkpit\\b"
+      ]
+    },
+    {
+      "name": "Oracle Financial",
+      "aliases": [
+        "oracle financial services",
+        "\\bofss\\b"
+      ]
+    },
+    {
+      "name": "Bharat Dynamics",
+      "aliases": [
+        "bharat dynamics"
+      ]
+    },
+    {
+      "name": "BSE Ltd",
+      "aliases": [
+        "\\bbse limited\\b"
+      ]
+    },
+    {
+      "name": "CDSL",
+      "aliases": [
+        "\\bcdsl\\b",
+        "central depository"
+      ]
+    },
+    {
+      "name": "MCX",
+      "aliases": [
+        "\\bmcx\\b",
+        "multi commodity exchange"
+      ]
+    },
+    {
+      "name": "Angel One",
+      "aliases": [
+        "angel one"
+      ]
+    },
+    {
+      "name": "360 ONE",
+      "aliases": [
+        "360 one"
+      ]
+    },
+    {
+      "name": "Nippon Life AMC",
+      "aliases": [
+        "nippon life india asset"
+      ]
+    },
+    {
+      "name": "PB Fintech",
+      "aliases": [
+        "pb fintech",
+        "policybazaar"
+      ]
+    },
+    {
+      "name": "Delhivery",
+      "aliases": [
+        "delhivery"
+      ]
+    },
+    {
+      "name": "Adani Energy",
+      "aliases": [
+        "adani energy solutions"
+      ]
+    },
+    {
+      "name": "Adani Total Gas",
+      "aliases": [
+        "adani total gas"
+      ]
+    },
+    {
+      "name": "Hindustan Copper",
+      "aliases": [
+        "hindustan copper"
+      ]
+    },
+    {
+      "name": "National Aluminium",
+      "aliases": [
+        "national aluminium",
+        "\\bnalco\\b"
+      ]
+    },
+    {
+      "name": "Jindal Steel",
+      "aliases": [
+        "jindal steel"
+      ]
+    },
+    {
+      "name": "APL Apollo",
+      "aliases": [
+        "apl apollo"
+      ]
+    },
+    {
+      "name": "Supreme Industries",
+      "aliases": [
+        "supreme industries"
+      ]
+    },
+    {
+      "name": "Astral",
+      "aliases": [
+        "\\bastral\\b"
+      ]
+    },
+    {
+      "name": "Kajaria",
+      "aliases": [
+        "kajaria"
+      ]
+    },
+    {
+      "name": "Berger Paints",
+      "aliases": [
+        "berger paints"
+      ]
+    },
+    {
+      "name": "Colgate",
+      "aliases": [
+        "colgate"
+      ]
+    },
+    {
+      "name": "Emami",
+      "aliases": [
+        "\\bemami\\b"
+      ]
+    },
+    {
+      "name": "Jubilant FoodWorks",
+      "aliases": [
+        "jubilant food"
+      ]
+    },
+    {
+      "name": "United Breweries",
+      "aliases": [
+        "united breweries"
+      ]
+    },
+    {
+      "name": "Radico Khaitan",
+      "aliases": [
+        "radico"
+      ]
+    },
+    {
+      "name": "Kalyan Jewellers",
+      "aliases": [
+        "kalyan jewellers"
+      ]
+    },
+    {
+      "name": "Crompton",
+      "aliases": [
+        "crompton"
+      ]
+    },
+    {
+      "name": "Blue Star",
+      "aliases": [
+        "blue star"
+      ]
+    },
+    {
+      "name": "Exide",
+      "aliases": [
+        "\\bexide\\b"
+      ]
+    },
+    {
+      "name": "Amara Raja",
+      "aliases": [
+        "amara raja"
+      ]
+    },
+    {
+      "name": "Sona BLW",
+      "aliases": [
+        "sona blw",
+        "sona comstar"
+      ]
+    },
+    {
+      "name": "Uno Minda",
+      "aliases": [
+        "uno minda"
+      ]
+    },
+    {
+      "name": "Escorts Kubota",
+      "aliases": [
+        "escorts"
+      ]
+    },
+    {
+      "name": "Cummins India",
+      "aliases": [
+        "cummins india"
+      ]
+    },
+    {
+      "name": "Thermax",
+      "aliases": [
+        "thermax"
+      ]
+    },
+    {
+      "name": "CG Power",
+      "aliases": [
+        "cg power"
+      ]
+    },
+    {
+      "name": "Hitachi Energy",
+      "aliases": [
+        "hitachi energy"
+      ]
+    },
+    {
+      "name": "GE Vernova T&D",
+      "aliases": [
+        "ge vernova"
+      ]
+    },
+    {
+      "name": "Premier Energies",
+      "aliases": [
+        "premier energies"
+      ]
+    },
+    {
+      "name": "Inox Wind",
+      "aliases": [
+        "inox wind"
+      ]
+    },
+    {
+      "name": "KEI Industries",
+      "aliases": [
+        "kei industries"
+      ]
+    },
+    {
+      "name": "RVNL",
+      "aliases": [
+        "\\brvnl\\b",
+        "rail vikas"
+      ]
+    },
+    {
+      "name": "IRCON",
+      "aliases": [
+        "\\bircon\\b"
+      ]
+    },
+    {
+      "name": "HUDCO",
+      "aliases": [
+        "\\bhudco\\b"
+      ]
+    },
+    {
+      "name": "IREDA",
+      "aliases": [
+        "\\bireda\\b"
+      ]
+    },
+    {
+      "name": "LIC Housing",
+      "aliases": [
+        "lic housing"
+      ]
+    },
+    {
+      "name": "Aditya Birla Capital",
+      "aliases": [
+        "aditya birla capital"
+      ]
+    },
+    {
+      "name": "Poonawalla",
+      "aliases": [
+        "poonawalla"
+      ]
+    },
+    {
+      "name": "Star Health",
+      "aliases": [
+        "star health"
+      ]
+    },
+    {
+      "name": "ICICI Securities",
+      "aliases": [
+        "icici securities"
+      ]
+    },
+    {
+      "name": "Zee Entertainment",
+      "aliases": [
+        "zee entertainment"
+      ]
+    },
+    {
+      "name": "Sun TV",
+      "aliases": [
+        "sun tv"
+      ]
+    },
+    {
+      "name": "PVR INOX",
+      "aliases": [
+        "pvr inox"
+      ]
+    },
+    {
+      "name": "Vodafone Idea",
+      "aliases": [
+        "vodafone idea",
+        "\\bvi\\b.*telecom"
+      ]
+    },
+    {
+      "name": "Tata Technologies",
+      "aliases": [
+        "tata technologies"
+      ]
+    },
+    {
+      "name": "Bajaj Housing",
+      "aliases": [
+        "bajaj housing"
+      ]
+    },
+    {
+      "name": "Hyundai",
+      "aliases": [
+        "hyundai motor"
+      ]
+    },
+    {
+      "name": "LG Electronics India",
+      "aliases": [
+        "lg electronics india"
+      ]
+    },
+    {
+      "name": "Tata Capital",
+      "aliases": [
+        "tata capital"
+      ]
+    },
+    {
+      "name": "HDB Financial",
+      "aliases": [
+        "hdb financial"
+      ]
+    },
+    {
+      "name": "NSDL",
+      "aliases": [
+        "\\bnsdl\\b"
+      ]
+    },
+    {
+      "name": "Lenskart",
+      "aliases": [
+        "lenskart"
+      ]
+    },
+    {
+      "name": "Groww",
+      "aliases": [
+        "\\bgroww\\b",
+        "billionbrains"
+      ]
+    },
+    {
+      "name": "PhysicsWallah",
+      "aliases": [
+        "physicswallah"
+      ]
+    },
+    {
+      "name": "Meesho",
+      "aliases": [
+        "\\bmeesho\\b"
+      ]
+    },
+    {
+      "name": "Zepto",
+      "aliases": [
+        "\\bzepto\\b"
+      ]
+    },
+    {
+      "name": "Flipkart",
+      "aliases": [
+        "flipkart"
+      ]
+    },
+    {
+      "name": "PhonePe",
+      "aliases": [
+        "phonepe"
+      ]
     }
   ],
   "global_universe": [
