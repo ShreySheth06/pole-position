@@ -1838,7 +1838,8 @@
     {
       "name": "Zee Entertainment",
       "aliases": [
-        "zee entertainment"
+        "zee entertainment",
+        "\\bzee\\b(?! (news|business|5|tv))"
       ]
     },
     {

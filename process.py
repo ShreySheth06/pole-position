@@ -349,8 +349,14 @@ class _Analyst:
         return any(p.search(text) for p in self.drop)
 
     def companies(self, text: str, sid: str) -> list:
+        """Companies named in `text`, ordered by where they first appear (the subject comes first)."""
         pool = self.universe if sid == "india" else self.global_universe + self.universe
-        names = [n for n, pats in pool if any(p.search(text) for p in pats)]
+        found = []
+        for n, pats in pool:
+            pos = [m.start() for p in pats for m in [p.search(text)] if m]
+            if pos:
+                found.append((min(pos), n))
+        names = [n for _, n in sorted(found)]
         if len(names) > 1 and "Tata Group" in names:
             names.remove("Tata Group")
         return names
@@ -752,15 +758,16 @@ def _company_desk(stories: list, n: int = 10) -> list:
                 continue
             hits = set(st.get("_hits") or [])
             cos = ANALYST.companies(st["title"], "india")  # the company must be the headline's subject
-            if not cos and _MARKET_TITLE_RE.search(st["title"]):
-                continue  # market wraps that merely mention a stock in the summary
+            if _MARKET_TITLE_RE.search(st["title"]) or _IPO_NOISE_RE.search(st["title"]):
+                continue  # market wraps and IPO paperwork belong in the main pages, not the company desk
             company_story = (st.get("subsection") == "corporate" or hits & _COMPANY_SIGNALS) and not (
                 hits & _MARKETWIDE and not hits & _COMPANY_SIGNALS)
             if not company_story:
                 continue
             if pass_ == 1 and not cos:
                 continue  # first pass: named large/mid caps only
-            if not cos and (_IPO_NOISE_RE.search(st["title"]) or not hits & (_COMPANY_SIGNALS - {"Stock move"})):
+            if not cos and (st.get("subsection") != "corporate" or hits & _MARKETWIDE
+                            or not hits & (_COMPANY_SIGNALS - {"Stock move"})):
                 continue  # second pass: only substantive company news (results, deals, orders, calls)
             key = (cos[0] if cos else st["title"][:40]).lower()
             if key in seen:
