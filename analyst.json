@@ -544,7 +544,8 @@
         "reliance jio",
         "jio platforms",
         "reliance retail",
-        "mukesh ambani"
+        "mukesh ambani",
+        "\\breliance\\b(?! (power|infra|infrastructure|capital|communications|home finance|naval))"
       ]
     },
     {
@@ -611,7 +612,8 @@
       "name": "Kotak Bank",
       "aliases": [
         "kotak mahindra bank",
-        "kotak bank"
+        "kotak bank",
+        "\\bkotak\\b"
       ]
     },
     {

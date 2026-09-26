@@ -737,6 +737,8 @@ def _pick_filings(items: list, now_utc: datetime) -> dict:
 # broker calls, orders, management and regulatory news about listed companies.
 _COMPANY_SIGNALS = {"Earnings", "Deals & capital", "Orders & capex", "Broker call", "Stock move", "Credit"}
 _MARKETWIDE = {"Market-wide move", "Macro data", "Rates & central banks", "Flows & positioning"}
+_IPO_NOISE_RE = re.compile(r"\b(ipo|drhp|draft papers|gmp|subscribed|sme|listing)\b", re.I)
+_MARKET_TITLE_RE = re.compile(r"\b(nifty|sensex|stock market|share market|markets?|dalal street|stocks to|midcaps?|smallcaps?)\b", re.I)
 
 
 def _company_desk(stories: list, n: int = 10) -> list:
@@ -749,13 +751,17 @@ def _company_desk(stories: list, n: int = 10) -> list:
             if st["id"] in {p["id"] for p in picks}:
                 continue
             hits = set(st.get("_hits") or [])
-            cos = st.get("companies") or []
+            cos = ANALYST.companies(st["title"], "india")  # the company must be the headline's subject
+            if not cos and _MARKET_TITLE_RE.search(st["title"]):
+                continue  # market wraps that merely mention a stock in the summary
             company_story = (st.get("subsection") == "corporate" or hits & _COMPANY_SIGNALS) and not (
                 hits & _MARKETWIDE and not hits & _COMPANY_SIGNALS)
             if not company_story:
                 continue
             if pass_ == 1 and not cos:
                 continue  # first pass: named large/mid caps only
+            if not cos and (_IPO_NOISE_RE.search(st["title"]) or not hits & (_COMPANY_SIGNALS - {"Stock move"})):
+                continue  # second pass: only substantive company news (results, deals, orders, calls)
             key = (cos[0] if cos else st["title"][:40]).lower()
             if key in seen:
                 continue
