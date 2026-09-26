@@ -7,10 +7,15 @@
   "window_hours_monday": 66,
   "repo_url": null,
   "limits": {
-    "india": 40,
+    "india": 50,
     "world": 36,
     "tech": 30,
-    "per_source_share": 0.35
+    "per_source_share": 0.35,
+    "sub_share": {
+      "india": {
+        "corporate": 0.35
+      }
+    }
   },
   "sections": [
     {

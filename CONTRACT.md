@@ -172,3 +172,9 @@ Story counts: india ≤ 40, world ≤ 36, tech ≤ 30 (see site.json limits). ~2
 - market ITEM `"stale": bool` (as_of too old) and `"suspect": bool` (implausible move → change/change_pct set to null).
 - feeds.json entries gain `"kind": "news" | "video" | "social"` (default news) and `"platform"` for social ("reddit" | "bluesky"). (X/Twitter was removed at the owner's request on 25 Sep 2026.)
 - Aggregator (Google News) items whose publisher is not a known trusted outlet are dropped.
+
+## v3 addendum (26 Sep 2026): Corporate India desk
+- Every story carries `"companies": ["Reliance", …]` (institutional universe matches from analyst.json, ≤ 3).
+- The India section carries `"company_desk": [{"id": "<story id>", "company": "Reliance" | null}]` (≤ 10). These are the day's
+  most important company stories, one per company, large caps first. The template renders them as "Corporate India" and removes them from the India story grid.
+- Exchange-filings feeds were removed at the owner's request (the paper is a newspaper, not a filings reporter).

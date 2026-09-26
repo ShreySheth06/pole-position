@@ -366,6 +366,7 @@ ANALYST = _Analyst()
 _DIGIT_RE = re.compile(r"[0-9]")
 
 _DEBUG_PARTS: dict = {}
+_STORY_EXTRA: dict = {}
 
 
 def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
@@ -416,6 +417,7 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
             not {"Macro data", "Rates & central banks", "Flows & positioning"} & set(signal_hits):
         subsection = "corporate"
     tags = (companies[:2] + [t for t in tags if t not in companies[:2]])[:4]
+    _STORY_EXTRA[id(primary)] = {"companies": companies[:3], "hits": signal_hits}
     _DEBUG_PARTS[id(primary)] = {"feed": primary.get("feed_id"), "tier": tier, "cov": len(coverage),
                                  "imp": importance, "rec": round(recency, 1), "sum": summary_bonus,
                                  "img": image_bonus, "pen": penalty, "n": len(cluster),
@@ -439,7 +441,7 @@ def _build_story(cluster: list, section_cfg: dict, sub_patterns: dict,
 # ---------------------------------------------------------------- selection / ranking
 
 def _select_section_stories(stories: list, limit: int, per_source_share: float,
-                            min_sub_share: float = 0.2) -> list:
+                            min_sub_share: float = 0.2, sub_share: dict | None = None) -> list:
     """Score-ranked pick up to `limit`, keeping any one source under `per_source_share` of
     the section where candidates allow; if that leaves the quota unfilled (too few diverse
     sources), the cap is relaxed just enough to fill it. Each subsection is first guaranteed
@@ -449,12 +451,12 @@ def _select_section_stories(stories: list, limit: int, per_source_share: float,
         return []
     ordered = sorted(stories, key=lambda s: -s["score"])
     cap = max(1, math.ceil(limit * per_source_share))
-    quota = max(1, int(limit * min_sub_share))
+    sub_share = sub_share or {}
     reserved, taken, rsrc = [], set(), {}
     for sub in dict.fromkeys(s["subsection"] for s in ordered):
         n = 0
         for s in ordered:
-            if n >= quota:
+            if n >= max(1, int(limit * sub_share.get(sub, min_sub_share))):
                 break
             if s["subsection"] == sub and rsrc.get(s["source_id"], 0) < cap:
                 reserved.append(s); taken.add(id(s)); n += 1
@@ -729,6 +731,38 @@ def _pick_filings(items: list, now_utc: datetime) -> dict:
     cal_sorted = sorted(top(cal, 14), key=lambda x: (x["date"], not x["largecap"]))
     return {"announcements": top(ann, 12), "calendar": cal_sorted, "actions": top(acts, 8)}
 
+
+# ---------------------------------------------------------------- Corporate India desk
+# The day's most important company stories, one per company, large caps first: results, deals,
+# broker calls, orders, management and regulatory news about listed companies.
+_COMPANY_SIGNALS = {"Earnings", "Deals & capital", "Orders & capex", "Broker call", "Stock move", "Credit"}
+_MARKETWIDE = {"Market-wide move", "Macro data", "Rates & central banks", "Flows & positioning"}
+
+
+def _company_desk(stories: list, n: int = 10) -> list:
+    picks, seen = [], set()
+    ranked = sorted(stories, key=lambda s: -s["score"])
+    for pass_ in (1, 2):
+        for st in ranked:
+            if len(picks) >= n:
+                break
+            if st["id"] in {p["id"] for p in picks}:
+                continue
+            hits = set(st.get("_hits") or [])
+            cos = st.get("companies") or []
+            company_story = (st.get("subsection") == "corporate" or hits & _COMPANY_SIGNALS) and not (
+                hits & _MARKETWIDE and not hits & _COMPANY_SIGNALS)
+            if not company_story:
+                continue
+            if pass_ == 1 and not cos:
+                continue  # first pass: named large/mid caps only
+            key = (cos[0] if cos else st["title"][:40]).lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            picks.append({"id": st["id"], "company": cos[0] if cos else None})
+    return picks
+
 # ---------------------------------------------------------------- public API
 
 def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[list, dict]:
@@ -823,6 +857,9 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             except Exception:  # noqa: BLE001 - one bad cluster must never sink the section
                 story = None
             if story:
+                extra = _STORY_EXTRA.pop(id(_best_of(cluster)), {})
+                story["companies"] = extra.get("companies", [])
+                story["_hits"] = extra.get("hits", [])
                 stories.append(story)
                 parts = _DEBUG_PARTS.pop(id(_best_of(cluster)), {})
                 debug_rows.setdefault(sid, []).append(
@@ -830,7 +867,8 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
                          title=story["title"][:90]))
 
         limit = limits.get(sid, len(stories))
-        selected = _select_section_stories(stories, limit, per_source_share)
+        selected = _select_section_stories(stories, limit, per_source_share,
+                                           sub_share=(limits.get("sub_share") or {}).get(sid))
         ordered = _build_top12_order(selected)
         for i, s in enumerate(ordered, start=1):
             s["rank"] = i
@@ -849,7 +887,7 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             "social": _pick_social(social_items, sid, low_value_patterns, now_utc),
         })
         if sid == "india":
-            out_sections[-1]["filings"] = _pick_filings(filing_items, now_utc)
+            out_sections[-1]["company_desk"] = _company_desk(ordered)
         stats_by_section[sid] = len(ordered)
         for s in ordered:
             stats_by_source[s["source"]] = stats_by_source.get(s["source"], 0) + 1
@@ -875,6 +913,9 @@ def build_sections(raw_items: list, site_cfg: dict, now_utc: datetime) -> tuple[
             fid = url_feed.get(st["url"])
             if fid in funnel:
                 funnel[fid]["printed"] += 1
+    for section in out_sections:
+        for st in section["stories"]:
+            st.pop("_hits", None)
     stats = {"by_source": by_source, "by_section": stats_by_section, "top_tags": top_tags,
              "funnel": funnel,
              "_candidates": {k: sorted(v, key=lambda r: -r["score"])[:120] for k, v in debug_rows.items()}}

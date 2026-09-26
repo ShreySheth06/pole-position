@@ -1035,7 +1035,8 @@
       "subsection": null,
       "url": "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml",
       "tier": 1,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request: newspaper, not a filings reporter"
     },
     {
       "id": "nse_board_meetings",
@@ -1047,7 +1048,8 @@
       "subsection": null,
       "url": "https://nsearchives.nseindia.com/content/RSS/Board_Meetings.xml",
       "tier": 1,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request: newspaper, not a filings reporter"
     },
     {
       "id": "nse_corporate_actions",
@@ -1059,7 +1061,8 @@
       "subsection": null,
       "url": "https://nsearchives.nseindia.com/content/RSS/Corporate_action.xml",
       "tier": 1,
-      "enabled": true
+      "enabled": false,
+      "note": "removed at owner request: newspaper, not a filings reporter"
     },
     {
       "id": "nse_financial_results",
@@ -1071,7 +1074,70 @@
       "subsection": null,
       "url": "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
       "tier": 1,
+      "enabled": false,
+      "note": "removed at owner request: newspaper, not a filings reporter"
+    },
+    {
+      "id": "et_industry",
+      "source_id": "et",
+      "source": "Economic Times",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
+      "tier": 1,
       "enabled": true
+    },
+    {
+      "id": "et_corporate_trends",
+      "source_id": "et",
+      "source": "Economic Times",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://economictimes.indiatimes.com/news/company/corporate-trends/rssfeeds/2143429.cms",
+      "tier": 1,
+      "enabled": true
+    },
+    {
+      "id": "hbl_companies",
+      "source_id": "hbl",
+      "source": "Hindu BusinessLine",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://www.thehindubusinessline.com/companies/feeder/default.rss",
+      "tier": 2,
+      "enabled": true
+    },
+    {
+      "id": "cnbctv18_business",
+      "source_id": "cnbctv18",
+      "source": "CNBC-TV18",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/business.xml",
+      "tier": 2,
+      "enabled": true
+    },
+    {
+      "id": "google_reuters_india_companies",
+      "source_id": "google",
+      "source": "Google",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://news.google.com/rss/search?q=site:reuters.com+India+%28shares+OR+results+OR+stake+OR+deal+OR+acquisition+OR+profit%29+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "tier": 1,
+      "enabled": true,
+      "aggregator": true
+    },
+    {
+      "id": "google_bloomberg_india_companies",
+      "source_id": "google",
+      "source": "Google",
+      "section": "india",
+      "subsection": "corporate",
+      "url": "https://news.google.com/rss/search?q=site:bloomberg.com+India+%28shares+OR+stake+OR+deal+OR+billionaire+OR+IPO+OR+profit%29+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "tier": 1,
+      "enabled": true,
+      "aggregator": true
     }
   ]
 }

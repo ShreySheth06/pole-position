@@ -1304,7 +1304,7 @@
     {
       "name": "Bank of India",
       "aliases": [
-        "(?<!state )bank of india\\b"
+        "(?<!state )(?<!reserve )bank of india\\b"
       ]
     },
     {

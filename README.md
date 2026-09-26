@@ -5,7 +5,7 @@ A personal newspaper for the Indian markets. It **prints itself** in the cloud e
 | Section | What's in it |
 |---|---|
 | **Front page** | The lead story, the 20-second "Before the bell" read and a market snapshot |
-| **01 India** | The Editor's Briefing (Gemini takeaways, a "watch today" sheet and India in brief), then Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, Nifty 50 breadth and top movers, **NSE filings** (results & board-meeting calendar, material disclosures, ex-dates), FII/DII flows, and ranked stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
+| **01 India** | The Editor's Briefing (Gemini takeaways, a "watch today" sheet and India in brief), then Nifty/Sensex/Bank Nifty/VIX/USD-INR tiles, a Nifty chart, sector bars, Nifty 50 breadth and top movers, **Corporate India** (the day's major company stories, one per company, large caps first), FII/DII flows, and ranked market and economy stories from ET, Mint, Business Standard, Moneycontrol, BusinessLine, FE, NDTV Profit, CNBC-TV18, Bloomberg and Reuters |
 | **02 World** | An editor's note, a global index heat-map, US futures, FX, commodities, bond yields, and stories from WSJ, Bloomberg, FT, Reuters, CNBC, MarketWatch, The Economist, Nikkei Asia and BBC |
 | **03 AI & Tech** | An editor's note, tech bellwethers (incl. Indian IT), a trending-topics chart, AI videos on YouTube, Reddit/Bluesky chatter, and stories from TechCrunch, The Verge, MIT Tech Review, Ars, Wired, VentureBeat, OpenAI, Google, Bloomberg/WSJ/FT tech, ET Tech, Inc42 and Hacker News |
 
