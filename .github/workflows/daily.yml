@@ -24,12 +24,13 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: no surprise when ubuntu-latest moves to a new release
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
+        continue-on-error: true   # if this ever fails, the runner's own python3 (3.12 on 24.04) is used
         with:
           python-version: "3.12"
 
@@ -39,10 +40,10 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TZ: Asia/Kolkata
-        run: python build.py
+        run: python3 build.py
 
       - name: Check the page before publishing (a broken page is never published)
-        run: python check_site.py site
+        run: python3 check_site.py site
 
       - name: Save edition to archive (also keeps the schedule alive)
         env:
@@ -57,18 +58,18 @@ jobs:
             git push || echo "archive push skipped"
           fi
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: no surprise when ubuntu-latest moves to a new release
     timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

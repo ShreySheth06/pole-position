@@ -20,10 +20,10 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check the paper is fresh and repair it if not
         env:
           GH_TOKEN: ${{ github.token }}
