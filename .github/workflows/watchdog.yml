@@ -1,0 +1,31 @@
+name: Watchdog
+
+# Checks every 2 hours that the paper is fresh. It cancels stuck printing runs, starts a reprint if
+# the edition is over 3 hours old, and opens a GitHub issue (GitHub emails you) if the paper has
+# been stale for over 8 hours. The issue closes by itself once the paper is fresh. See watchdog.py.
+on:
+  schedule:
+    - cron: "47 */2 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  actions: write
+  issues: write
+  pages: read
+  contents: read
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the paper is fresh and repair it if not
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: python3 watchdog.py

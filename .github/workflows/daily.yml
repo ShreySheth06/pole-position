@@ -5,27 +5,27 @@ on:
     # GitHub runs scheduled jobs late at busy times (hours, sometimes), so print every hour at an
     # off-peak minute: there is always a fresh edition waiting whenever you open the paper.
     - cron: "17 * * * *"
-  workflow_dispatch: {}        # "Run workflow" button = refresh now
+  workflow_dispatch: {}        # "Run workflow" button = refresh now (the watchdog uses it too)
   push:
     branches: [main]
-    paths-ignore: ["archive/**", "README.md"]
+    paths-ignore: ["archive/**", "README.md", "CONTRACT.md", "watchdog.py", ".github/workflows/watchdog.yml"]
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
+# The newest run always wins. On 30 Sep a run got stuck "waiting for github-pages deployment
+# approval" (a GitHub-side hang, since no approval is configured), and with cancel-in-progress
+# off, every later run queued behind it for three days. Now the next run cancels a stuck one.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: print-the-paper
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +41,9 @@ jobs:
           TZ: Asia/Kolkata
         run: python build.py
 
+      - name: Check the page before publishing (a broken page is never published)
+        run: python check_site.py site
+
       - name: Save edition to archive (also keeps the schedule alive)
         env:
           TZ: Asia/Kolkata
@@ -50,7 +53,7 @@ jobs:
           git add archive
           if ! git diff --cached --quiet; then
             git commit -m "Edition $(date +'%Y-%m-%d %H:%M IST')"
-            git pull --rebase --quiet || true
+            git pull --rebase --quiet || git rebase --abort || true
             git push || echo "archive push skipped"
           fi
 
@@ -58,5 +61,14 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v4
