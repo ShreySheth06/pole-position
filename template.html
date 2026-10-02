@@ -1147,7 +1147,13 @@ function renderUtil(d) {
 function renderNotice(d) {
   var bits = [];
   if (S.archived) bits.push('<span>You are reading the archived edition of <b>' + esc(d.meta.edition_label || dateLong(d.meta.edition_date)) + '</b>.</span><button type="button" data-act="edition-today">Back to today</button>');
+  else if (S.newer) bits.push('<span>A newer edition is out (printed ' + esc(hhmm(S.newer)) + ' IST).</span><button type="button" data-act="reload">Read it</button>');
   else if (d.meta.stale) bits.push('<span>⚠ This morning\'s fetch returned no news — you are seeing the last good edition' + (d.meta.edition_date ? ' (' + esc(dateOnly(d.meta.edition_date)) + ')' : '') + '.</span>' + (safeUrl(d.meta.repo_url) ? '<a href="' + esc(safeUrl(d.meta.repo_url).replace(/\/+$/, '') + '/actions/workflows/daily.yml') + '" target="_blank" rel="noopener noreferrer">Re-run the build ↗</a>' : ''));
+  else {
+    // The paper reprints hourly; if this copy is much older, say so plainly rather than pass it off as today's.
+    var ageH = (Date.now() - parseT(d.meta.generated_at)) / 36e5;
+    if (ageH > 3) bits.push('<span>⚠ This edition was printed ' + (ageH >= 48 ? Math.floor(ageH / 24) + ' days' : Math.floor(ageH) + ' hours') + ' ago (' + esc(dateOnly(d.meta.edition_date)) + ', ' + esc(hhmm(d.meta.generated_at)) + ' IST). The press repairs itself and a fresh edition is on its way.</span><button type="button" data-act="reload">Check again</button>');
+  }
   $('#noticeIn').innerHTML = bits.join('');
   $('#notice').hidden = !bits.length;
 }
@@ -2330,6 +2336,7 @@ function bind() {
       case 'close': closeAll(); break;
       case 'chat-clear': Chat.reset(); break;
       case 'edition-today': loadEdition(TODAY.meta.edition_date); break;
+      case 'reload': location.replace(location.pathname + '?t=' + Date.now() + location.hash); break;
       case 'reset-read': READ = new Set(); store.set('pp.read', []); $$('.story.read').forEach(function (x) { x.classList.remove('read'); }); toast('Read history cleared'); break;
       case 'top': e.preventDefault(); window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); break;
     }
@@ -2415,6 +2422,32 @@ function loadEdition(date) {
 function start(d) {
   TODAY = norm(d);
   render(TODAY, { archived: false });
+  watchForNewer();
+}
+/* A phone can keep this tab open for days. When the reader comes back (or every 15 minutes), look
+   for a newer printing and offer it, so an old copy is never mistaken for today's paper. */
+var lastNewerCheck = 0;
+function checkNewer() {
+  if (!TODAY || !TODAY.meta || !TODAY.meta.generated_at || Date.now() - lastNewerCheck < 60000) return;
+  lastNewerCheck = Date.now();
+  fetch('data.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (x) {
+      var g = x && x.meta && x.meta.generated_at;
+      if (g && parseT(g) > parseT(TODAY.meta.generated_at) + 60000 && S.newer !== g) {
+        S.newer = g;
+        if (!S.archived) renderNotice(TODAY);
+      }
+    })
+    .catch(function () {});
+}
+function watchForNewer() {
+  if (watchForNewer.on) return;
+  watchForNewer.on = true;
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) checkNewer(); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) { lastNewerCheck = 0; checkNewer(); } });
+  setInterval(checkNewer, 15 * 60 * 1000);
+  setTimeout(checkNewer, 5000);
 }
 function fatal(msg) { $('#main').innerHTML = '<p class="fatal">' + esc(msg) + '</p>'; }
 function boot() {

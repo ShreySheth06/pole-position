@@ -17,7 +17,10 @@ GitHub Actions (free)                     every hour, around the clock
         ├─ process.py  → de-duplicate, cluster the same story across outlets, classify, rank
         ├─ markets.py  → ~65 instruments (Yahoo Finance; Stooq as a backup) + NSE FII/DII
         ├─ ai.py       → Gemini morning brief + "why it matters" (falls back to an auto-digest)
-        └─ template.html → site/index.html (one self-contained page) → GitHub Pages
+        ├─ template.html → site/index.html (one self-contained page)
+        └─ check_site.py → publish to GitHub Pages only if the page passes its checks
+GitHub Actions (free)                     every 2 hours
+   └─ python watchdog.py → unjam, reprint or alert
 ```
 The code uses only the Python standard library, with no servers and no databases. It doesn't depend on any Claude subscription. Past editions are kept in `archive/` for 30 days and can be picked from the "Today" menu.
 
@@ -57,6 +60,12 @@ These appear in the AI & Tech section only.
 - `markets.json`: instruments shown (Yahoo Finance symbols).
 - `site.json`: title, window, section keywords, ranking keywords, AI models.
 - Schedule: the `cron` lines in `.github/workflows/daily.yml`, which are in UTC (IST − 5:30).
+
+## Self-repair (it looks after itself)
+- **Newest run wins:** each hourly print cancels any older run that's stuck. A single GitHub hang can no longer hold up later editions. That's what froze the paper from 30 Sep to 3 Oct.
+- **Checked before publishing:** `check_site.py` checks every new page before it goes live (complete HTML, data present, enough stories, no script errors). A broken build is never published, and readers keep the last good edition.
+- **Watchdog:** `watchdog.yml` runs every 2 hours, separately from printing. It re-enables the schedule if GitHub has switched it off, cancels stuck runs (force-cancel if needed), and reprints if the edition is over 3 hours old. If the paper is stale for over 8 hours, it opens a GitHub issue "Pole Position is not updating", which emails you. The issue closes itself once the paper is fresh again.
+- **Honest page:** if the copy you're reading is over 3 hours old, the page says so at the top. If a newer edition is out while your tab is open, it offers "Read it".
 
 ## Troubleshooting
 - The footer lists every source with a green/red dot. A red source is skipped, and the rest of the paper still prints.
